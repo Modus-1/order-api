@@ -1,0 +1,47 @@
+name: .NET Core CI
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths-ignore:
+      - '**.gitignore'
+      - '**/README.md'
+      - '**.dockerignore'
+      - '**/stylecop.props'
+      - '**/stylecop.ruleset'
+      - '**/stylecop.json'
+  pull_request:
+    branches: [ main, develop ]
+    paths-ignore:
+      - '**.gitignore'
+      - '**/README.md'
+      - '**.dockerignore'
+      - '**/stylecop.props'
+      - '**/stylecop.ruleset'
+      - '**/stylecop.json'
+jobs:
+  build_and_test:
+    runs-on: ${{ matrix.os }} 
+    defaults:
+      run:
+        shell: bash
+        working-directory: order-api
+    strategy: 
+      matrix: 
+        os: [windows-latest]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.401
+
+    - name: Install dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
+
+    - name: Test
+      run: dotnet test --no-restore --verbosity normal
