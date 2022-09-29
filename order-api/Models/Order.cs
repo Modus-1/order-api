@@ -6,16 +6,11 @@
     public class Order
     {
         /// <summary>
-        /// Created orders counter. Used to increment the order ID.
-        /// </summary>
-        private ulong CreatedOrders { get; set; } = 0;
-
-        /// <summary>
         /// Creates an order.
         /// </summary>
         public Order()
         {
-            Id = CreatedOrders++;
+            
         }
 
         /// <summary>
@@ -26,7 +21,7 @@
         /// <summary>
         /// The ID of the order.
         /// </summary>
-        public ulong Id { get; set; } = 0;
+        public string Id { get; set; } = Guid.NewGuid().ToString();
         
         /// <summary>
         /// Gets or sets the total order price.
@@ -36,7 +31,7 @@
         /// <summary>
         /// Gets or sets the list of order items.
         /// </summary>
-        public List<OrderItem> Items { get; private set; } = new List<OrderItem>();
+        public List<OrderItem> Items { get; set; } = new List<OrderItem>();
 
         /// <summary>
         /// The ID of the table.
@@ -46,7 +41,7 @@
         /// <summary>
         /// The session ID of this order.
         /// </summary>
-        public string SessionId { get; set; } = string.Empty;
+        //public string SessionId { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the order status.

@@ -10,7 +10,7 @@ namespace order_api
         /// <summary>
         /// A list containing all active orders.
         /// </summary>
-        public List<Order> Orders { get; private set; } = new List<Order>();
+        public List<Order> Orders { get; set; } = new List<Order>();
 
         /// <summary>
         /// Registers an order.
@@ -24,8 +24,8 @@ namespace order_api
             if (order.TableId < 0)
                 throw new ArgumentOutOfRangeException(nameof(order.TableId), "Table ID must be a positive integer.");
 
-            if (string.IsNullOrEmpty(order.SessionId))
-                throw new ArgumentNullException(nameof(order.SessionId), "Session ID cannot be null");
+//            if (string.IsNullOrEmpty(order.SessionId))
+//                throw new ArgumentNullException(nameof(order.SessionId), "Session ID cannot be null");
 
             if (order.TotalPrice < 0)
                 throw new ArgumentOutOfRangeException(nameof(order.TotalPrice), "Price must be a positive integer.");
@@ -46,7 +46,7 @@ namespace order_api
         /// </summary>
         /// <param name="id">The ID of the order to get.</param>
         /// <returns>The order.</returns>
-        public Order Get(ulong id)
+        public Order Get(string id)
         {
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
             Order o = Orders.Find((o) => o.Id == id);
