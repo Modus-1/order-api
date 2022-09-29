@@ -2,7 +2,7 @@ name: .NET Core CI
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ "main", "develop" ]
     paths-ignore:
       - '**.gitignore'
       - '**/README.md'
@@ -11,7 +11,7 @@ on:
       - '**/stylecop.ruleset'
       - '**/stylecop.json'
   pull_request:
-    branches: [ main, develop ]
+    branches: [ "main", "develop" ]
     paths-ignore:
       - '**.gitignore'
       - '**/README.md'
