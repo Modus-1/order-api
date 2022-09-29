@@ -26,10 +26,13 @@ namespace order_api.Controllers
         /// Route to get the status of the specified order.
         /// </summary>
         [HttpGet("status/{id}")]
-        public int GetStatus(ulong id)
+        public object GetStatus(ulong id)
         {
             Order order = OrderMgr.Get(id);
-            return (int)order.Status;
+
+            return new {
+                status = (int)order.Status
+            };
         }
     }
 }
