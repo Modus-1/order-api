@@ -159,6 +159,52 @@ namespace order_api.Controllers
         }
 
         /// <summary>
+        /// Gets the specified order item.
+        /// </summary>
+        /// <param name="guid">The GUID of the order.</param>
+        /// <param name="id">The ID of the item.</param>
+        /// <returns></returns>
+        [HttpGet("{guid}/item/{id}")]
+        public ActionResult GetItem(string guid, int id)
+        {
+            Order? order = OrderMgr.Get(guid);
+
+            if (order == null)
+                return BadRequest(new { message = "Order not found." });
+
+            OrderItem? item = order.GetItem(id);
+
+            if (item == null)
+                return BadRequest(new { message = "Item not found." });
+
+            return Ok(item);
+        }
+
+        /// <summary>
+        /// Deletes the specified order item.
+        /// </summary>
+        /// <param name="guid">The GUID of the order.</param>
+        /// <param name="id">The ID of the item.</param>
+        /// <returns></returns>
+        [HttpDelete("{guid}/item/{id}")]
+        public ActionResult DeleteItem(string guid, int id)
+        {
+            Order? order = OrderMgr.Get(guid);
+
+            if (order == null)
+                return BadRequest(new { message = "Order not found." });
+
+            OrderItem? item = order.GetItem(id);
+
+            if (item == null)
+                return BadRequest(new { message = "Item not found." });
+
+            order.RemoveItem(id);
+
+            return Ok(order);
+        }
+
+        /// <summary>
         /// Route to get the status of the specified order.
         /// </summary>
         [HttpGet("{guid}/status")]

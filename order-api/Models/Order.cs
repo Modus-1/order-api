@@ -1,4 +1,6 @@
-﻿namespace order_api.Models
+﻿using System;
+
+namespace order_api.Models
 {
     /// <summary>
     /// Represents an order.
@@ -92,6 +94,32 @@
 
             // Add the item
             Items.Add(item);
+        }
+
+        /// <summary>
+        /// Gets the specified order item.
+        /// </summary>
+        /// <param name="id">The ID of the item to retrieve.</param>
+        /// <returns></returns>
+        public OrderItem GetItem(int id)
+        {
+#pragma warning disable CS8603 // Possible null reference return.
+            return Items.Find((o) => o.Id == id);
+#pragma warning restore CS8603 // Possible null reference return.
+        }
+
+        /// <summary>
+        /// Removes the specified item.
+        /// </summary>
+        /// <param name="id">The ID of the item to remove.</param>
+        public void RemoveItem(int id)
+        {
+            OrderItem? item = GetItem(id);
+
+            if (item == null)
+                throw new ArgumentException("Item not found", nameof(id));
+
+            Items.Remove(item);
         }
 
         /// <summary>
