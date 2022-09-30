@@ -22,4 +22,8 @@
         </PackageReference>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\order-api\order-api.csproj" />
+    </ItemGroup>
+
 </Project>
