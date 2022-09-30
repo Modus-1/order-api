@@ -150,4 +150,43 @@ public class OrderManagerTests
             .NotBeEmpty()
             .And.HaveCount(1);
     }
+
+    [Fact]
+    public void Get_WithPopulatedOrderList_ShouldRetrieveOrder()
+    {
+        // Arrange
+        var order = new Order();
+        _orderManager.AddOrder(order);
+        Order? result = null;
+        
+        // Act
+        var action = () => result = _orderManager.Get(order.Id);
+
+        // Assert
+        action
+            .Should()
+            .NotThrow();
+        result
+            .Should()
+            .NotBeNull()
+            .And.Be(order);
+    }
+
+    [Fact]
+    public void Get_WhenNotFound_ShouldReturnNull()
+    {
+        // Arrange
+        Order? result = null;
+        
+        // Act
+        var action = () => result = _orderManager.Get(Guid.NewGuid().ToString());
+
+        // Assert
+        action
+            .Should()
+            .NotThrow();
+        result
+            .Should()
+            .BeNull();
+    }
 }
