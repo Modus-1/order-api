@@ -5,7 +5,46 @@
         "description": [
             "Gets a list of orders. <code>{filter}</code> must be either <code>all</code>, <code>placed</code>, <code>processing</code> or <code>ready</code>.<br>",
             "<br>By default, up to 10 orders per request are served. You can retrieve more by increasing the <code>page</code> query parameter until there is nothing left."
-        ]
+        ],
+        "responseBodies": {
+            "200": {
+                "type": "json",
+                "description": "An array of objects representing orders. The objects below are shown with the 'all' filter.",
+                "data": [
+                    {
+                        "id": "57aa8ea7-369b-4dcc-a6bc-2635a8f3e91f",
+                        "totalPrice": 20,
+                        "items": [
+                            {
+                                "id": 10,
+                                "amount": 2,
+                                "name": "Pancakes"
+                            },
+                            {
+                                "id": 31,
+                                "amount": 4,
+                                "name": "Cola"
+                            }
+                        ],
+                        "tableId": 2,
+                        "status": 1
+                    },
+                    {
+                        "id": "f7b9ba83-e7eb-4647-9ff4-ee2ab5dcff35",
+                        "totalPrice": 8.75,
+                        "items": [
+                            {
+                                "id": 1,
+                                "amount": 2,
+                                "name": "Spaghetti"
+                            }
+                        ],
+                        "tableId": 11,
+                        "status": 0
+                    }
+                ]
+            }
+        }
     },
     {
         "method": "post",
@@ -20,15 +59,17 @@
                 "tableId": 0
             }
         },
-        "responseBody": {
-            "type": "json",
-            "description": "An object representing an order.",
-            "data": {
-                "id": "57aa8ea7-369b-4dcc-a6bc-2635a8f3e91f",
-                "totalPrice": 0,
-                "items": [],
-                "tableId": 0,
-                "status": 0
+        "responseBodies": {
+            "200": {
+                "type": "json",
+                "description": "An object representing the created order.",
+                "data": {
+                    "id": "57aa8ea7-369b-4dcc-a6bc-2635a8f3e91f",
+                    "totalPrice": 0,
+                    "items": [],
+                    "tableId": 0,
+                    "status": 0
+                }
             }
         }
     },

@@ -48,18 +48,44 @@
     }
 
     /**
-     * Gets the specified body for the specified route.
-     * @param {"requestBody"|"responseBody"} type The body type.
+     * Gets the request body for the specified route.
      * @param {"get"|"post"|"put"|"patch"|"delete"} method The HTTP method of the route.
      * @param {String} path The path of the route.
      */
-    function getBody(type = "requestBody", method, path) {
+    function getRequestBody(method, path) {
         const route = getRouteMeta(method, path);
 
         if(!route)
             return null;
 
-        const body = route[type];
+        const body = route.requestBody;
+
+        if(!body)
+            return null;
+        
+        switch(body.type) {
+            default:
+                throw new Error("Unknown type");
+            case "string":
+                return body.data;
+            case "json":
+                return JSON.stringify(body.data, null, 4);
+        }
+    }
+
+    /**
+     * Gets the response body for the specified route.
+     * @param {Number} code The HTTP response code.
+     * @param {"get"|"post"|"put"|"patch"|"delete"} method The HTTP method of the route.
+     * @param {String} path The path of the route.
+     */
+    function getResponseBody(code, method, path) {
+        const route = getRouteMeta(method, path);
+
+        if((!route) || (!route.responseBodies))
+            return null;
+
+        const body = route.responseBodies[`${code}`];
 
         if(!body)
             return null;
@@ -177,7 +203,7 @@
 
                 // Check for request body
                 if(methodObj.requestBody != null) {
-                    const reqBody = getBody("requestBody", methodName, pathName);
+                    const reqBody = getRequestBody(methodName, pathName);
 
                     if(reqBody != null) {
                         explEl.appendChild(Dom.createHeader("Sample Request Body"));
@@ -216,11 +242,11 @@
                         const rspCodeSample = document.createElement('td');
 
                         // Check for response body
-                        const rspBody = getBody("responseBody", methodName, pathName);
+                        const rspBody = getResponseBody(200, methodName, pathName);
 
                         if(rspBody != null) {
                             const descEl = document.createElement('i');
-                            descEl.textContent = getRouteMeta(methodName, pathName).responseBody.description;
+                            descEl.textContent = getRouteMeta(methodName, pathName).responseBodies[code].description;
                             rspCodeSample.appendChild(descEl);
 
                             // Create code block
