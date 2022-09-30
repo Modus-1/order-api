@@ -19,6 +19,14 @@ namespace order_api.Controllers
         /// </summary>
         public static OrderManager OrderMgr { get; set; } = new OrderManager();
 
+        /// <summary>
+        /// Max items per page.
+        /// </summary>
+        public const int PAGINATION_MAX_ITEMS = 10;
+
+        /// <summary>
+        /// The logger.
+        /// </summary>
         private readonly ILogger<OrderController> _logger;
 
         public OrderController(ILogger<OrderController> logger)
@@ -55,7 +63,8 @@ namespace order_api.Controllers
                     return BadRequest();
             }
 
-            return Ok(orders);
+            int startIndex = (page - 1) * PAGINATION_MAX_ITEMS;
+            return Ok(orders.Take(new Range(startIndex, startIndex + PAGINATION_MAX_ITEMS)));
         }
 
         /// <summary>
