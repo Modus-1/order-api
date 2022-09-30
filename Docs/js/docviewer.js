@@ -1,3 +1,7 @@
+/*
+ * MODUS ASSUMPTION 2022
+ */
+
 (function() {
     let endpoints;
     let supplementalDocs;
@@ -44,28 +48,29 @@
     }
 
     /**
-     * Gets the request body for the specified route.
+     * Gets the specified body for the specified route.
+     * @param {"requestBody"|"responseBody"} type The body type.
      * @param {"get"|"post"|"put"|"patch"|"delete"} method The HTTP method of the route.
      * @param {String} path The path of the route.
      */
-    function getRequestBody(method, path) {
+    function getBody(type = "requestBody", method, path) {
         const route = getRouteMeta(method, path);
 
         if(!route)
             return null;
 
-        const reqBody = route.requestBody;
+        const body = route[type];
 
-        if(!reqBody)
+        if(!body)
             return null;
         
-        switch(reqBody.type) {
+        switch(body.type) {
             default:
                 throw new Error("Unknown type");
             case "string":
-                return reqBody.data;
+                return body.data;
             case "json":
-                return JSON.stringify(reqBody.data, null, 4);
+                return JSON.stringify(body.data, null, 4);
         }
     }
 
@@ -167,7 +172,7 @@
 
                 // Check for request body
                 if(methodObj.requestBody != null) {
-                    const reqBody = getRequestBody(methodName, pathName);
+                    const reqBody = getBody("requestBody", methodName, pathName);
 
                     if(reqBody != null) {
                         explEl.appendChild(Dom.createHeader("Sample Request Body"));
@@ -204,7 +209,24 @@
                         tr.appendChild(rspCodeTd);
 
                         const rspCodeSample = document.createElement('td');
-                        rspCodeSample.textContent = `(empty)`;
+
+                        // Check for response body
+                        const rspBody = getBody("responseBody", methodName, pathName);
+
+                        if(rspBody != null) {
+                            const descEl = document.createElement('i');
+                            descEl.textContent = getRouteMeta(methodName, pathName).responseBody.description;
+                            rspCodeSample.appendChild(descEl);
+
+                            // Create code block
+                            const codeBlock = document.createElement('div');
+                            codeBlock.classList.add("code-block");
+                            codeBlock.textContent = rspBody;
+                            rspCodeSample.appendChild(codeBlock);
+                        }
+                        else
+                            rspCodeSample.textContent = `(empty)`;
+
                         tr.appendChild(rspCodeSample);
 
                         rspCodesTbl.appendChild(tr);
