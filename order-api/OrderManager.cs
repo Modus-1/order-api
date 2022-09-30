@@ -1,4 +1,6 @@
-﻿using order_api.Models;
+﻿using MongoDB.Driver;
+using order_api.Config;
+using order_api.Models;
 
 namespace order_api
 {
@@ -8,9 +10,31 @@ namespace order_api
     public class OrderManager
     {
         /// <summary>
+        /// Gets or sets the Mongo database client.
+        /// </summary>
+        private MongoClient DBClient { get; set; }
+
+        /// <summary>
+        /// Finished order collection.
+        /// </summary>
+        internal IMongoCollection<Order> FinishedOrderCol { get; set; }
+
+        /// <summary>
         /// A list containing all active orders.
         /// </summary>
         public List<Order> Orders { get; set; } = new List<Order>();
+
+        /// <summary>
+        /// Constructs a new order manager.
+        /// </summary>
+        public OrderManager()
+        {
+            if (DatabaseConfiguration.DATABASE_URI != string.Empty)
+            {
+                DBClient = new MongoClient(DatabaseConfiguration.DATABASE_URI);
+                FinishedOrderCol = DBClient.GetDatabase(DatabaseConfiguration.DB_NAME).GetCollection<Order>(DatabaseConfiguration.COL_NAME_FINISHED);
+            }
+        }
 
         /// <summary>
         /// Registers an order.

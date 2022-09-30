@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MongoDB.Driver;
+using order_api.Config;
 using order_api.Models;
 using order_api.Models.SchemaObjects;
 using System;
@@ -303,9 +305,10 @@ namespace order_api.Controllers
                 order.Status = OrderStatus.DONE;
 
                 // Step 2. Store a copy of this order in the database
-                // There is no database thing here so it will do nothing at this moment
-                
-                // TODO Database insertion code
+                // If no database URI is specified, do not store anything
+
+                if(!string.IsNullOrEmpty(DatabaseConfiguration.DATABASE_URI))
+                    await OrderMgr.FinishedOrderCol.InsertOneAsync(order);
 
                 // Finally, delete the order
                 OrderMgr.DeleteOrder(guid);

@@ -39,6 +39,11 @@
         public int TableId { get; set; } = 0;
 
         /// <summary>
+        /// Specifies when the order was created.
+        /// </summary>
+        public DateTime CreationTime = DateTime.Now;
+
+        /// <summary>
         /// The session ID of this order.
         /// </summary>
         //public string SessionId { get; set; } = string.Empty;
