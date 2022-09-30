@@ -16,6 +16,21 @@
             hdrEl.classList.add('header');
             hdrEl.textContent = title;
             return hdrEl;
+        },
+        /**
+         * Creates a table column.
+         * @param {String} caption The caption for this column.
+         * @param {Number} width The column width.
+         * @returns 
+         */
+        createTableCol: function(caption, width = null) {
+            const tableCol = document.createElement('th');
+            tableCol.textContent = caption;
+
+            if(width != null)
+                tableCol.style.width = (typeof width == 'number') ? `${width}px` : width;
+            
+            return tableCol;
         }
     }
 
@@ -170,16 +185,32 @@
 
                     explEl.appendChild(Dom.createHeader("Response Codes"));
 
-                    const rspCodesContainerEl = document.createElement('div');
-                    rspCodesContainerEl.classList.add('params');
+                    // Create table for response codes
+                    const rspCodesTbl = document.createElement('table');
+                    rspCodesTbl.classList.add('response-codes');
 
+                    // Add headers
+                    const headerTr = document.createElement('tr');
+                    headerTr.appendChild(Dom.createTableCol("Code", 100));
+                    headerTr.appendChild(Dom.createTableCol("Expected Response"));
+                    rspCodesTbl.appendChild(headerTr);
+
+                    // Iterate response code keys
                     for(let code of respondCodeKeys) {
-                        const rspCodeEl = document.createElement('div');
-                        rspCodeEl.textContent = `${code}: ${methodObj.responses[code].description}`;
-                        rspCodesContainerEl.appendChild(rspCodeEl);
+                        const tr = document.createElement('tr');
+
+                        const rspCodeTd = document.createElement('td');
+                        rspCodeTd.textContent = `${code}: ${methodObj.responses[code].description}`;
+                        tr.appendChild(rspCodeTd);
+
+                        const rspCodeSample = document.createElement('td');
+                        rspCodeSample.textContent = `(empty)`;
+                        tr.appendChild(rspCodeSample);
+
+                        rspCodesTbl.appendChild(tr);
                     }
 
-                    explEl.appendChild(rspCodesContainerEl);
+                    explEl.appendChild(rspCodesTbl);
                 }
 
                 // Add constructed containers in order

@@ -84,6 +84,25 @@ main .box>.explanation .parameter>span {
     white-space: pre;
 }
 
+table {
+    text-align: left;
+    width: 100%;
+    border: 1px solid #aeaeae;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 4px;
+    box-sizing: border-box;
+}
+
+th {
+    background: #5e7db2;
+    color: white;
+    font-weight: 100;
+    line-height: 1.3;
+}
+
 /* specific method styles */
 
 main .box.get { border-color: #1687d3; background-color: #e1f3ff; }
