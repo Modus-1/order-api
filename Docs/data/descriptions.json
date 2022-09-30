@@ -155,5 +155,163 @@
                 }
             }
         }
+    },
+    {
+        "method": "get",
+        "path": "/Order/{guid}/item/{id}",
+        "description": [
+            "Gets the state of the specified item."
+        ],
+        "responseBodies": {
+            "200": {
+                "type": "json",
+                "description": "An object representing the current state of the item.",
+                "data": {
+                    "id": 132,
+                    "amount": 20,
+                    "name": "Bread"
+                }
+            }
+        }
+    },
+    {
+        "method": "delete",
+        "path": "/Order/{guid}/item/{id}",
+        "description": [
+            "Deletes the specified item from the order."
+        ],
+        "responseBodies": {
+            "200": {
+                "type": "json",
+                "description": "An object stating that the deletion was successful.",
+                "data": {
+                    "success": true
+                }
+            }
+        }
+    },
+    {
+        "method": "get",
+        "path": "/Order/{guid}/status",
+        "description": [
+            "Gets the status of the specified order."
+        ],
+        "responseBodies": {
+            "200": {
+                "type": "json",
+                "description": "An object representing the current status. [0 = Placed, 1 = Processing, 2 = Ready, 3 = Done]",
+                "data": {
+                    "status": 0
+                }
+            }
+        }
+    },
+    {
+        "method": "put",
+        "path": "/Order/{guid}/status",
+        "description": [
+            "Sets the status of the specified order."
+        ],
+        "responseBodies": {
+            "200": {
+                "type": "json",
+                "description": "An object representing the current state of the order.",
+                "data": {
+                    "id": "57aa8ea7-369b-4dcc-a6bc-2635a8f3e91f",
+                    "totalPrice": 0,
+                    "items": [],
+                    "tableId": 0,
+                    "status": 2
+                }
+            }
+        }
+    },
+    {
+        "method": "put",
+        "path": "/Order/{guid}/price",
+        "description": [
+            "Sets the price of the specified order."
+        ],
+        "responseBodies": {
+            "200": {
+                "type": "json",
+                "description": "An object representing the current state of the order.",
+                "data": {
+                    "id": "57aa8ea7-369b-4dcc-a6bc-2635a8f3e91f",
+                    "totalPrice": 100,
+                    "items": [],
+                    "tableId": 0,
+                    "status": 2
+                }
+            }
+        }
+    },
+    {
+        "method": "get",
+        "path": "/Order/{guid}/price",
+        "description": [
+            "Gets the price of the specified order."
+        ],
+        "responseBodies": {
+            "200": {
+                "type": "json",
+                "description": "An object containing the current price.",
+                "data": {
+                    "totalPrice": 100
+                }
+            }
+        }
+    },
+    {
+        "method": "get",
+        "path": "/Order/{guid}/tableno",
+        "description": [
+            "Gets the table number of the specified order."
+        ],
+        "responseBodies": {
+            "200": {
+                "type": "json",
+                "description": "An object containing the table number.",
+                "data": {
+                    "tableId": 20
+                }
+            }
+        }
+    },
+    {
+        "method": "put",
+        "path": "/Order/{guid}/tableno",
+        "description": [
+            "Sets the table number of the specified order."
+        ],
+        "responseBodies": {
+            "200": {
+                "type": "json",
+                "description": "An object representing the current state of the order.",
+                "data": {
+                    "id": "57aa8ea7-369b-4dcc-a6bc-2635a8f3e91f",
+                    "totalPrice": 100,
+                    "items": [],
+                    "tableId": 0,
+                    "status": 2
+                }
+            }
+        }
+    },
+    {
+        "method": "post",
+        "path": "/Order/{guid}/finalize",
+        "description": [
+            "Finalizes the specified order (marks the order as complete)."
+        ],
+        "responseBodies": {
+            "200": {
+                "type": "json",
+                "description": "An object stating that the operation was successful.",
+                "data": {
+                    "success": true
+                }
+            }
+        }
     }
 ]
