@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Xunit;
 using FluentAssertions;
 using order_api;
@@ -153,7 +154,7 @@ public class OrderManagerTests
     }
 
     [Fact]
-    public void Get_WithPopulatedOrderList_ShouldRetrieveOrder()
+    public void GetOrder_WithPopulatedOrderList_ShouldRetrieveOrder()
     {
         // Arrange
         var order = new Order();
@@ -174,7 +175,7 @@ public class OrderManagerTests
     }
 
     [Fact]
-    public void Get_WhenNotFound_ShouldReturnNull()
+    public void GetOrder_WhenNotFound_ShouldReturnNull()
     {
         // Arrange
         Order? result = null;
@@ -189,5 +190,121 @@ public class OrderManagerTests
         result
             .Should()
             .BeNull();
+    }
+
+    [Fact]
+    public void GetOrderSubset_WithEmptyOrderList_ShouldReturnEmptyOrderList()
+    {
+        // Arrange
+        var results = new List<Order>();
+        
+        // Act
+        var action = () => results = _orderManager.GetOrderSubset();
+        
+        // Assert
+        action
+            .Should()
+            .NotThrow();
+        results
+            .Should()
+            .NotBeNull()
+            .And.BeEmpty();
+    }
+
+    [Fact]
+    public void GetOrderSubset_WithPopulatedOrderList_ShouldReturnCorrectAmountOfOrders()
+    {
+        // Arrange
+        const int collectionSize = 5;
+        for (var i = 0; i < collectionSize; i++)
+        {
+            _orderManager.AddOrder(new Order
+                {
+                    Status = OrderStatus.PLACED
+                }
+            );
+        }
+
+        var results = new List<Order>();
+
+        // Act
+        var action = () => results = _orderManager.GetOrderSubset(OrderStatus.PLACED);
+
+        // Assert
+        action
+            .Should()
+            .NotThrow();
+        results
+            .Should()
+            .NotBeNull()
+            .And.NotBeEmpty()
+            .And.HaveCount(collectionSize)
+            .And.OnlyContain(order => order.Status == OrderStatus.PLACED);
+    }
+
+    [Fact]
+    public void GetOrderSubset_WithMixedOrderList_ShouldReturnCorrectAmountOfOrders()
+    {
+        // Arrange
+        const int collectionSize = 10;
+        const int expectedReturnCollectionSize = 5;
+        for (var i = 1; i < collectionSize + 1; i++)
+        {
+            var status = i % 2 == 0 ? OrderStatus.PLACED : OrderStatus.PROCESSING;
+            _orderManager.AddOrder(new Order
+            {
+                Id = i.ToString(),
+                Status = status
+            });
+        }
+
+        var results = new List<Order>();
+
+        // Act
+        var action = () => results = _orderManager.GetOrderSubset(OrderStatus.PLACED);
+
+        // Assert
+        action
+            .Should()
+            .NotThrow();
+        results
+            .Should()
+            .NotBeNull()
+            .And.NotBeEmpty()
+            .And.HaveCount(expectedReturnCollectionSize)
+            .And.OnlyContain(order => Convert.ToInt16(order.Id) % 2 == 0)
+            .And.OnlyContain(order => order.Status == OrderStatus.PLACED);
+    }
+
+    [Fact]
+    public void GetOrderSubset_WithLargeList_ShouldReturnCorrectOrderListPage()
+    {
+        // Arrange
+        const int collectionSize = 20;
+        const int expectedReturnCollectionSize = 10;
+        for (var i = 1; i < collectionSize + 1; i++)
+        {
+            _orderManager.AddOrder(new Order
+            {
+                Id = i.ToString(),
+                Status = OrderStatus.PLACED
+            });
+        }
+
+        var results = new List<Order>();
+
+        // Act
+        var action = () => results = _orderManager.GetOrderSubset(OrderStatus.PLACED, 2);
+        
+        // Assert
+        action
+            .Should()
+            .NotThrow();
+        results
+            .Should()
+            .NotBeNull()
+            .And.NotBeEmpty()
+            .And.OnlyContain(order => order.Status == OrderStatus.PLACED)
+            .And.OnlyContain(order => Convert.ToInt16(order.Id) > 10);
     }
 }
