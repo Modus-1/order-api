@@ -1,13 +1,58 @@
 (function() {
+    let endpoints;
+    let supplementalDocs;
+
+    /**
+     * Gets metadata for the specified route.
+     * @param {"get"|"post"|"put"|"patch"|"delete"} method The HTTP method of the route.
+     * @param {String} path The path of the route.
+     */
+    function getRouteMeta(method, path) {
+        return supplementalDocs.find((x) => (x.method == method) && (x.path == path)) || {};
+    }
+
+    /**
+     * Gets the request body for the specified route.
+     * @param {"get"|"post"|"put"|"patch"|"delete"} method The HTTP method of the route.
+     * @param {String} path The path of the route.
+     */
+    function getRequestBody(method, path) {
+        const route = getRouteMeta(method, path);
+
+        if(!route)
+            return null;
+
+        const reqBody = route.requestBody;
+
+        if(!reqBody)
+            return null;
+        
+        switch(reqBody.type) {
+            default:
+                throw new Error("Unknown type");
+            case "string":
+                return reqBody.data;
+            case "json":
+                return JSON.stringify(reqBody.data, 4, null);
+        }
+    }
+
+    /**
+     * Fetches additional documentation.
+     */
+    async function fetchSupplementalDocs() {
+        const req = await fetch('data/descriptions.json');
+        supplementalDocs = await req.json();
+    }
+
     /**
      * Entry point.
      */
     window.getDocs = async function() {
-        let endpoints;
-
         try {
-            let epReq = await fetch('data/endpoints.json');
+            const epReq = await fetch('data/endpoints.json');
             endpoints = await epReq.json();
+            await fetchSupplementalDocs();
         } catch(e) {
             alert(`{e}: Cannot fetch endpoints.`);
             return;
@@ -25,6 +70,7 @@
             // Go through each method "post", "get", etc.
             for(let methodName of methodNames) {
                 const methodObj = endpoints.paths[pathName][methodName];
+                const routeMeta = getRouteMeta(methodName, pathName);
 
                 // Create an API box
                 const apiBox = document.createElement('div');
@@ -48,9 +94,28 @@
                 const explEl = document.createElement('div');
                 explEl.classList.add('explanation');
                 explEl.innerHTML = `
+                    <div class="header">Description</div>
+                    <p class="desc">${(routeMeta.description != null) ? routeMeta.description.join('\n') : "(no description)"}</p>
                     <div class="header">Parameters</div>
-                    <div class="params"></div>
+                    <div class="field params"></div>
                 `;
+
+                // Check for request body
+                if(methodObj.requestBody != null) {
+                    const reqBody = getRequestBody(methodName, pathName);
+
+                    if(reqBody != null) {
+                        const hdr = document.createElement('div');
+                        hdr.classList.add('header');
+                        hdr.textContent = "Sample Request Body";
+                        explEl.appendChild(hdr);
+
+                        const reqBodyEl = document.createElement('div');
+                        reqBodyEl.classList.add('code-block');
+                        reqBodyEl.textContent = reqBody;
+                        explEl.appendChild(reqBodyEl);
+                    }
+                }
 
                 if(methodObj['parameters'] != null) {
                     // Add parameters

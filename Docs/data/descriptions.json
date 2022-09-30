@@ -1,0 +1,31 @@
+[
+    {
+        "method": "get",
+        "path": "/Order/active/{filter}",
+        "description": [
+            "Gets a list of orders. <code>{filter}</code> must be either <code>all</code>, <code>placed</code>, <code>processing</code> or <code>ready</code>.<br>",
+            "<br>By default, up to 10 orders per request are served. You can retrieve more by increasing the <code>page</code> query parameter until there is nothing left."
+        ]
+    },
+    {
+        "method": "post",
+        "path": "/Order/create",
+        "description": [
+            "This endpoint creates a new order. A valid table number and total price must be specified in the request body when creating a new order."
+        ],
+        "requestBody": {
+            "type": "json",
+            "data": {
+                "totalPrice": 0,
+                "tableId": 0
+            }
+        }
+    },
+    {
+        "method": "get",
+        "path": "/Order/{guid}",
+        "description": [
+            "Returns the current state of the specified order."
+        ]
+    }
+]

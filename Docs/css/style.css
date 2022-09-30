@@ -43,7 +43,7 @@ main .box>.explanation>.header {
     font-weight: bold;
 }
 
-main .box>.explanation>.header:not(:last-child) {
+main .box>.explanation>.header:not(:first-child) {
     margin-bottom: 5px;
 }
 
@@ -70,6 +70,18 @@ main .box>.explanation .parameter:not(:last-child) {
 
 main .box>.explanation .parameter>span {
     display: inline-block;
+}
+
+/* generic stuff */
+.code-block,
+.explanation .field {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+.code-block {
+    font-family: monospace;
+    white-space: pre;
 }
 
 /* specific method styles */
