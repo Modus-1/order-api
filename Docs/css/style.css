@@ -32,6 +32,46 @@ main .box>.endpoint>.url {
     padding-left: 5px;
 }
 
+main .box>.explanation {
+    border-top: 1px solid rgb(143, 143, 143);
+    margin-top: 5px;
+    padding-top: 5px;
+    font-size: 14px;
+}
+
+main .box>.explanation>.header {
+    font-weight: bold;
+}
+
+main .box>.explanation>.header:not(:last-child) {
+    margin-bottom: 5px;
+}
+
+main .box>.explanation .parameter .type,
+main .box>.explanation .parameter .schema {
+    padding: 2px 5px;
+    background-color: rgb(124, 124, 124);
+    color: white;
+    border-radius: 3px;
+    margin-right: 5px;
+}
+
+main .box>.explanation .parameter .name {
+    font-family: monospace;
+}
+
+main .box>.explanation .parameter .schema {
+    background-color: #009b74;
+}
+
+main .box>.explanation .parameter:not(:last-child) {
+    margin-bottom: 5px;
+}
+
+main .box>.explanation .parameter>span {
+    display: inline-block;
+}
+
 /* specific method styles */
 
 main .box.get { border-color: #1687d3; background-color: #e1f3ff; }
