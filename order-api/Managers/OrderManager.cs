@@ -2,22 +2,22 @@
 using order_api.Config;
 using order_api.Models;
 
-namespace order_api
+namespace order_api.Managers
 {
     /// <summary>
     /// A management object for orders.
     /// </summary>
-    public class OrderManager
+    public class OrderManager : IOrderManager
     {
         /// <summary>
         /// Gets or sets the Mongo database client.
         /// </summary>
-        private MongoClient DBClient { get; set; }
+        private MongoClient? DbClient { get; set; }
 
         /// <summary>
         /// Finished order collection.
         /// </summary>
-        internal IMongoCollection<Order> FinishedOrderCol { get; set; }
+        private IMongoCollection<Order>? FinishedOrderCol { get; set; }
 
         /// <summary>
         /// A list containing all active orders.
@@ -31,8 +31,8 @@ namespace order_api
         {
             if (DatabaseConfiguration.DATABASE_URI != string.Empty)
             {
-                DBClient = new MongoClient(DatabaseConfiguration.DATABASE_URI);
-                FinishedOrderCol = DBClient.GetDatabase(DatabaseConfiguration.DB_NAME).GetCollection<Order>(DatabaseConfiguration.COL_NAME_FINISHED);
+                DbClient = new MongoClient(DatabaseConfiguration.DATABASE_URI);
+                FinishedOrderCol = DbClient.GetDatabase(DatabaseConfiguration.DB_NAME).GetCollection<Order>(DatabaseConfiguration.COL_NAME_FINISHED);
             }
         }
 
@@ -55,9 +55,7 @@ namespace order_api
                 throw new ArgumentOutOfRangeException(nameof(order.TotalPrice), "Price must be a positive decimal.");
 
             // Check if order already exists
-#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
-            Order prevOrder = Orders.Find((o) => o.Id == order.Id);
-#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
+            var prevOrder = Orders.Find((o) => o.Id == order.Id);
 
             if (prevOrder != null)
                 throw new ArgumentException("Order already exists.");
@@ -71,7 +69,7 @@ namespace order_api
         /// <param name="guid">The GUID of the order to delete.</param>
         public void DeleteOrder(string guid)
         {
-            Order? order = Get(guid);
+            var order = GetOrder(guid);
 
             if (order == null)
                 throw new ArgumentNullException(nameof(guid), "Item not found.");
@@ -84,11 +82,19 @@ namespace order_api
         /// </summary>
         /// <param name="id">The ID of the order to get.</param>
         /// <returns>The order.</returns>
-        public Order Get(string id)
+        public Order? GetOrder(string id)
         {
-#pragma warning disable CS8603 // Possible null reference return.
             return Orders.Find((o) => o.Id == id);
-#pragma warning restore CS8603 // Possible null reference return.
+        }
+
+        /// <summary>
+        /// Saves the order in the database.
+        /// </summary>
+        /// <param name="order">The order to save in the database.</param>
+        public async Task SaveOrderToDatabase(Order order)
+        {
+            if (FinishedOrderCol is not null)
+                await FinishedOrderCol.InsertOneAsync(order);
         }
     }
 }

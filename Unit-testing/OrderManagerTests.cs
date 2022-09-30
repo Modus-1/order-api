@@ -2,6 +2,7 @@ using System;
 using Xunit;
 using FluentAssertions;
 using order_api;
+using order_api.Managers;
 using order_api.Models;
 
 namespace Unit_testing;
@@ -160,7 +161,7 @@ public class OrderManagerTests
         Order? result = null;
         
         // Act
-        var action = () => result = _orderManager.Get(order.Id);
+        var action = () => result = _orderManager.GetOrder(order.Id);
 
         // Assert
         action
@@ -179,7 +180,7 @@ public class OrderManagerTests
         Order? result = null;
         
         // Act
-        var action = () => result = _orderManager.Get(Guid.NewGuid().ToString());
+        var action = () => result = _orderManager.GetOrder(Guid.NewGuid().ToString());
 
         // Assert
         action

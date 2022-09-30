@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MongoDB.Driver;
 using order_api.Config;
 using order_api.Models;
 using order_api.Models.SchemaObjects;
-using System;
+using order_api.Managers;
 
 namespace order_api.Controllers
 {
@@ -17,7 +16,7 @@ namespace order_api.Controllers
         /// <summary>
         /// The management object to handle orders.
         /// </summary>
-        public static OrderManager OrderMgr { get; set; } = new OrderManager();
+        private readonly IOrderManager _orderManager;
 
         /// <summary>
         /// Max items per page.
@@ -29,9 +28,10 @@ namespace order_api.Controllers
         /// </summary>
         private readonly ILogger<OrderController> _logger;
 
-        public OrderController(ILogger<OrderController> logger)
+        public OrderController(ILogger<OrderController> logger, IOrderManager orderManager)
         {
             _logger = logger;
+            _orderManager = orderManager;
         }
 
         /// <summary>
@@ -48,16 +48,16 @@ namespace order_api.Controllers
             switch(filter)
             {
                 case "all":
-                    orders = OrderMgr.Orders;
+                    orders = _orderManager.Orders;
                     break;
                 case "placed":
-                    orders = OrderMgr.Orders.FindAll((x) => x.Status == OrderStatus.PLACED);
+                    orders = _orderManager.Orders.FindAll((x) => x.Status == OrderStatus.PLACED);
                     break;
                 case "processing":
-                    orders = OrderMgr.Orders.FindAll((x) => x.Status == OrderStatus.PROCESSING);
+                    orders = _orderManager.Orders.FindAll((x) => x.Status == OrderStatus.PROCESSING);
                     break;
                 case "ready":
-                    orders = OrderMgr.Orders.FindAll((x) => x.Status == OrderStatus.READY);
+                    orders = _orderManager.Orders.FindAll((x) => x.Status == OrderStatus.READY);
                     break;
                 default:
                     return BadRequest();
@@ -78,7 +78,7 @@ namespace order_api.Controllers
             try
             {
                 var orderToAdd = new Order { TotalPrice = o.TotalPrice, TableId = o.TableId };
-                OrderMgr.AddOrder(orderToAdd);
+                _orderManager.AddOrder(orderToAdd);
                 return Ok(orderToAdd);
             }
             catch (Exception e)
@@ -98,7 +98,7 @@ namespace order_api.Controllers
         [HttpGet("{guid}")]
         public ActionResult GetOrder(string guid)
         {
-            Order? o = OrderMgr.Get(guid);
+            Order? o = _orderManager.GetOrder(guid);
 
             if (o == null)
                 return BadRequest(new { message = "Order not found." });
@@ -116,12 +116,12 @@ namespace order_api.Controllers
         {
             try
             {
-                Order? order = OrderMgr.Get(guid);
+                Order? order = _orderManager.GetOrder(guid);
 
                 if (order == null)
                     return BadRequest(new { message = "Order not found." });
 
-                OrderMgr.DeleteOrder(guid);
+                _orderManager.DeleteOrder(guid);
             }
             catch(Exception e)
             {
@@ -140,7 +140,7 @@ namespace order_api.Controllers
         [HttpPost("{guid}/item")]
         public ActionResult AddItems(string guid, OrderItem[] items)
         {
-            Order? o = OrderMgr.Get(guid);
+            Order? o = _orderManager.GetOrder(guid);
 
             if (o == null)
                 return BadRequest(new { message = "Order not found." });
@@ -167,7 +167,7 @@ namespace order_api.Controllers
         [HttpGet("{guid}/item/{id}")]
         public ActionResult GetItem(string guid, int id)
         {
-            Order? order = OrderMgr.Get(guid);
+            Order? order = _orderManager.GetOrder(guid);
 
             if (order == null)
                 return BadRequest(new { message = "Order not found." });
@@ -189,7 +189,7 @@ namespace order_api.Controllers
         [HttpDelete("{guid}/item/{id}")]
         public ActionResult DeleteItem(string guid, int id)
         {
-            Order? order = OrderMgr.Get(guid);
+            Order? order = _orderManager.GetOrder(guid);
 
             if (order == null)
                 return BadRequest(new { message = "Order not found." });
@@ -210,7 +210,7 @@ namespace order_api.Controllers
         [HttpGet("{guid}/status")]
         public ActionResult GetStatus(string guid)
         {
-            Order? order = OrderMgr.Get(guid);
+            Order? order = _orderManager.GetOrder(guid);
 
             if (order == null)
                 return BadRequest(new { message = "Order not found." });
@@ -230,7 +230,7 @@ namespace order_api.Controllers
         [HttpPut("{guid}/status")]
         public ActionResult SetStatus(string guid, int status)
         {
-            Order? order = OrderMgr.Get(guid);
+            Order? order = _orderManager.GetOrder(guid);
 
             if (order == null)
                 return BadRequest(new { message = "Order not found." });
@@ -261,7 +261,7 @@ namespace order_api.Controllers
         [HttpPut("{guid}/price")]
         public ActionResult SetPrice(string guid, decimal price)
         {
-            Order? order = OrderMgr.Get(guid);
+            Order? order = _orderManager.GetOrder(guid);
 
             if (order == null)
                 return BadRequest(new { message = "Order not found." });
@@ -284,7 +284,7 @@ namespace order_api.Controllers
         [HttpGet("{guid}/tableno")]
         public ActionResult GetTableId(string guid)
         {
-            Order? order = OrderMgr.Get(guid);
+            Order? order = _orderManager.GetOrder(guid);
 
             if (order == null)
                 return BadRequest(new { message = "Order not found." });
@@ -301,7 +301,7 @@ namespace order_api.Controllers
         [HttpGet("{guid}/price")]
         public ActionResult GetPrice(string guid)
         {
-            Order? order = OrderMgr.Get(guid);
+            Order? order = _orderManager.GetOrder(guid);
 
             if (order == null)
                 return BadRequest(new { message = "Order not found." });
@@ -320,7 +320,7 @@ namespace order_api.Controllers
         [HttpPut("{guid}/tableno")]
         public ActionResult SetTableNo(string guid, int tableNo)
         {
-            Order? order = OrderMgr.Get(guid);
+            Order? order = _orderManager.GetOrder(guid);
 
             if (order == null)
                 return BadRequest(new { message = "Order not found." });
@@ -350,7 +350,7 @@ namespace order_api.Controllers
         {
             try
             {
-                Order? order = OrderMgr.Get(guid);
+                Order? order = _orderManager.GetOrder(guid);
 
                 if (order == null)
                     return BadRequest(new { message = "Order not found." });
@@ -362,11 +362,11 @@ namespace order_api.Controllers
                 // Step 2. Store a copy of this order in the database
                 // If no database URI is specified, do not store anything
 
-                if(!string.IsNullOrEmpty(DatabaseConfiguration.DATABASE_URI))
-                    await OrderMgr.FinishedOrderCol.InsertOneAsync(order);
+                if (!string.IsNullOrEmpty(DatabaseConfiguration.DATABASE_URI))
+                    await _orderManager.SaveOrderToDatabase(order);
 
                 // Finally, delete the order
-                OrderMgr.DeleteOrder(guid);
+                _orderManager.DeleteOrder(guid);
             }
             catch (Exception e)
             {
