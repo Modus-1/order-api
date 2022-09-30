@@ -1,0 +1,63 @@
+body {
+    background: #efefef;
+    font-family: "Open Sans";
+}
+
+main {
+    margin-left: 7%;
+    margin-right: 7%;
+}
+
+main .box {
+    border: 1px solid black;
+    border-radius: 5px;
+    padding: 5px;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+    box-shadow: 0 0 2px 0px #666666;
+}
+
+main .box>.endpoint>.method {
+    display: inline-block;
+    font-weight: bold;
+    border-radius: 5px;
+    padding: 5px 10px;
+    min-width: 54px;
+    text-align: center;
+}
+
+main .box>.endpoint>.url {
+    display: inline-block;
+    font-weight: 500;
+    padding-left: 5px;
+}
+
+/* specific method styles */
+
+main .box.get { border-color: #1687d3; background-color: #e1f3ff; }
+main .box.get>.endpoint>.url { color: #1687d3; }
+main .box.get>.endpoint>.method {
+    background-color: #1687d3;
+    color: white;
+}
+
+main .box.post { border-color: #37bb07; background-color: #e1fed7; }
+main .box.post>.endpoint>.url { color: #37bb07; }
+main .box.post>.endpoint>.method {
+    background-color: #37bb07;
+    color: white;
+}
+
+main .box.delete { border-color: #bb1f07; background-color: #ffe1dc; }
+main .box.delete>.endpoint>.url { color: #bb1f07; }
+main .box.delete>.endpoint>.method {
+    background-color: #bb1f07;
+    color: white;
+}
+
+main .box.put { border-color: #bb6d07; background-color: #fff1e0; }
+main .box.put>.endpoint>.url { color: #bb6d07; }
+main .box.put>.endpoint>.method {
+    background-color: #bb6d07;
+    color: white;
+}
