@@ -3,6 +3,23 @@
     let supplementalDocs;
 
     /**
+     * DOM utilities.
+     */
+    const Dom = {
+        /**
+         * Creates a header element.
+         * @param {String} title The title of this header.
+         * @returns {HTMLDivElement}
+         */
+        createHeader: function(title) {
+            const hdrEl = document.createElement('div');
+            hdrEl.classList.add('header');
+            hdrEl.textContent = title;
+            return hdrEl;
+        }
+    }
+
+    /**
      * Gets metadata for the specified route.
      * @param {"get"|"post"|"put"|"patch"|"delete"} method The HTTP method of the route.
      * @param {String} path The path of the route.
@@ -96,28 +113,15 @@
                 explEl.innerHTML = `
                     <div class="header">Description</div>
                     <p class="desc">${(routeMeta.description != null) ? routeMeta.description.join('\n') : "(no description)"}</p>
-                    <div class="header">Parameters</div>
-                    <div class="field params"></div>
                 `;
 
-                // Check for request body
-                if(methodObj.requestBody != null) {
-                    const reqBody = getRequestBody(methodName, pathName);
-
-                    if(reqBody != null) {
-                        const hdr = document.createElement('div');
-                        hdr.classList.add('header');
-                        hdr.textContent = "Sample Request Body";
-                        explEl.appendChild(hdr);
-
-                        const reqBodyEl = document.createElement('div');
-                        reqBodyEl.classList.add('code-block');
-                        reqBodyEl.textContent = reqBody;
-                        explEl.appendChild(reqBodyEl);
-                    }
-                }
-
+                // Check for parameters
                 if(methodObj['parameters'] != null) {
+                    explEl.appendChild(Dom.createHeader("Parameters"));
+
+                    const paramsContainerEl = document.createElement('div');
+                    paramsContainerEl.classList.add('params', 'field');
+
                     // Add parameters
                     for(let param of methodObj['parameters']) {
                         const paramContainer = document.createElement('div');
@@ -140,10 +144,43 @@
                         paramContainer.appendChild(schemaEl);
                         paramContainer.appendChild(nameEl);
 
-                        explEl.querySelector(".params").appendChild(paramContainer);
+                        paramsContainerEl.appendChild(paramContainer);
                     }
-                } else
-                    explEl.querySelector(".params").appendChild(new Text("(no parameters)"));
+
+                    explEl.appendChild(paramsContainerEl);
+                }
+
+                // Check for request body
+                if(methodObj.requestBody != null) {
+                    const reqBody = getRequestBody(methodName, pathName);
+
+                    if(reqBody != null) {
+                        explEl.appendChild(Dom.createHeader("Sample Request Body"));
+
+                        const reqBodyEl = document.createElement('div');
+                        reqBodyEl.classList.add('code-block');
+                        reqBodyEl.textContent = reqBody;
+                        explEl.appendChild(reqBodyEl);
+                    }
+                }
+
+                // Check for response codes
+                if(methodObj.responses != null) {
+                    const respondCodeKeys = Object.keys(methodObj.responses);
+
+                    explEl.appendChild(Dom.createHeader("Response Codes"));
+
+                    const rspCodesContainerEl = document.createElement('div');
+                    rspCodesContainerEl.classList.add('params');
+
+                    for(let code of respondCodeKeys) {
+                        const rspCodeEl = document.createElement('div');
+                        rspCodeEl.textContent = `${code}: ${methodObj.responses[code].description}`;
+                        rspCodesContainerEl.appendChild(rspCodeEl);
+                    }
+
+                    explEl.appendChild(rspCodesContainerEl);
+                }
 
                 // Add constructed containers in order
                 apiBox.appendChild(epContainerEl);
