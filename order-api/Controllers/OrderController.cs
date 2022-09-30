@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using order_api.Models;
 using order_api.Models.SchemaObjects;
+using System;
 
 namespace order_api.Controllers
 {
@@ -164,6 +165,29 @@ namespace order_api.Controllers
                     throw new Exception("Status is not valid.");
 
                 order.Status = orderStatus;
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new { message = e.Message });
+            }
+
+            return Ok(order);
+        }
+
+        /// <summary>
+        /// Sets the order price.
+        /// </summary>
+        /// <param name="price"></param>
+        /// <returns></returns>
+        [HttpPut("{guid}/price")]
+        public ActionResult SetPrice(string guid, decimal price)
+        {
+            Order order;
+
+            try
+            {
+                order = OrderMgr.Get(guid);
+                order.SetPrice(price);
             }
             catch (Exception e)
             {

@@ -88,5 +88,18 @@
             // Add the item
             Items.Add(item);
         }
+
+        /// <summary>
+        /// Sets the price.
+        /// </summary>
+        /// <param name="amount">The amount to set the price to.</param>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when price is a non-positive value.</exception>
+        public void SetPrice(decimal amount)
+        {
+            if (amount < 0)
+                throw new ArgumentOutOfRangeException(nameof(amount), "Price must be a positive decimal.");
+
+            TotalPrice = amount;
+        }
     }
 }

@@ -28,7 +28,7 @@ namespace order_api
 //                throw new ArgumentNullException(nameof(order.SessionId), "Session ID cannot be null");
 
             if (order.TotalPrice < 0)
-                throw new ArgumentOutOfRangeException(nameof(order.TotalPrice), "Price must be a positive integer.");
+                throw new ArgumentOutOfRangeException(nameof(order.TotalPrice), "Price must be a positive decimal.");
 
             // Check if order already exists
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
