@@ -7,6 +7,7 @@
     {
         PLACED = 0,
         PROCESSING = 1,
-        READY = 2
+        READY = 2,
+        DONE = 3
     }
 }

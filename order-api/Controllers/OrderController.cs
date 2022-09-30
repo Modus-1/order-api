@@ -279,5 +279,43 @@ namespace order_api.Controllers
 
             return Ok(order);
         }
+
+        /// <summary>
+        /// Finalizes the order. In other words:
+        ///   - The order is complete
+        ///   - It is removed from the memory list
+        ///   - The order is dumped to the database for record keeping.
+        /// </summary>
+        /// <param name="guid"></param>
+        /// <returns></returns>
+        [HttpPost("{guid}/finalize")]
+        public async Task<ActionResult> FinalizeOrder(string guid)
+        {
+            try
+            {
+                Order? order = OrderMgr.Get(guid);
+
+                if (order == null)
+                    return BadRequest(new { message = "Order not found." });
+
+                // Step 1. Set order status to DONE
+                // It is important clients ignore orders which are "DONE", because it implies there is nothing further to be done.
+                order.Status = OrderStatus.DONE;
+
+                // Step 2. Store a copy of this order in the database
+                // There is no database thing here so it will do nothing at this moment
+                
+                // TODO Database insertion code
+
+                // Finally, delete the order
+                OrderMgr.DeleteOrder(guid);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new { message = e.Message });
+            }
+
+            return Ok(new { success = true });
+        }
     }
 }
