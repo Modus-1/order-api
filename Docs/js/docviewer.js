@@ -33,7 +33,7 @@
             case "string":
                 return reqBody.data;
             case "json":
-                return JSON.stringify(reqBody.data, 4, null);
+                return JSON.stringify(reqBody.data, null, 4);
         }
     }
 
