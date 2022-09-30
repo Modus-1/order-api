@@ -101,11 +101,11 @@ namespace order_api.Managers
         public List<Order> GetOrderSubset(OrderStatus? status = null, int page = 1)
         {
             if (status is null) 
-                return Orders.Skip(page - 1 * PaginationMaxItems).Take(PaginationMaxItems).ToList();
+                return Orders.Skip((page - 1) * PaginationMaxItems).Take(PaginationMaxItems).ToList();
 
             return Orders
                 .Where(o => o.Status == status)
-                .Skip(page - 1 * PaginationMaxItems)
+                .Skip((page - 1) * PaginationMaxItems)
                 .Take(PaginationMaxItems)
                 .ToList();
         }
