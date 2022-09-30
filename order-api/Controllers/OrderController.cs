@@ -28,9 +28,10 @@ namespace order_api.Controllers
         /// Route to get orders.
         /// </summary>
         /// <param name="filter">Filter to use.</param>
+        /// <param name="page">The page to use.</param>
         /// <returns></returns>
         [HttpGet("active/{filter}")]
-        public ActionResult GetAll(string filter = "all")
+        public ActionResult GetAll(string filter = "all", int page = 1)
         {
             List<Order> orders;
 
@@ -188,6 +189,52 @@ namespace order_api.Controllers
             {
                 order = OrderMgr.Get(guid);
                 order.SetPrice(price);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new { message = e.Message });
+            }
+
+            return Ok(order);
+        }
+
+        /// <summary>
+        /// Route to get the table number of the specified order.
+        /// </summary>
+        [HttpGet("{guid}/tableno")]
+        public ActionResult GetTableId(string guid)
+        {
+            Order order;
+
+            try
+            {
+                order = OrderMgr.Get(guid);
+            }
+            catch (Exception)
+            {
+                return BadRequest(new { message = "Order not found." });
+            }
+
+            return Ok(new
+            {
+                tableId = order.TableId
+            });
+        }
+
+        /// <summary>
+        /// Sets the table number.
+        /// </summary>
+        /// <param name="tableNo">The table number</param>
+        /// <returns></returns>
+        [HttpPut("{guid}/tableno")]
+        public ActionResult SetPrice(string guid, int tableNo)
+        {
+            Order order;
+
+            try
+            {
+                order = OrderMgr.Get(guid);
+                order.SetTable(tableNo);
             }
             catch (Exception e)
             {

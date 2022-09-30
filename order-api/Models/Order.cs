@@ -101,5 +101,18 @@
 
             TotalPrice = amount;
         }
+
+        /// <summary>
+        /// Sets the table number.
+        /// </summary>
+        /// <param name="tableNo">The table number to set.</param>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        public void SetTable(int tableNo)
+        {
+            if (tableNo < 0)
+                throw new ArgumentOutOfRangeException(nameof(tableNo), "Table Number must be a positive integer.");
+
+            TableId = tableNo;
+        }
     }
 }
