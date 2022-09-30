@@ -96,6 +96,31 @@ namespace order_api.Controllers
         }
 
         /// <summary>
+        /// Deletes the specified order.
+        /// </summary>
+        /// <param name="guid">The GUID of the order to delete.</param>
+        /// <returns></returns>
+        [HttpDelete("{guid}")]
+        public ActionResult DeleteOrder(string guid)
+        {
+            try
+            {
+                Order? order = OrderMgr.Get(guid);
+
+                if (order == null)
+                    return BadRequest(new { message = "Order not found." });
+
+                OrderMgr.DeleteOrder(guid);
+            }
+            catch(Exception e)
+            {
+                return BadRequest(new { message = e.Message });
+            }
+
+            return Ok(new { success = true });
+        }
+
+        /// <summary>
         /// Adds an item to the specified order.
         /// </summary>
         /// <param name="guid">Order ID.</param>
@@ -128,16 +153,10 @@ namespace order_api.Controllers
         [HttpGet("{guid}/status")]
         public ActionResult GetStatus(string guid)
         {
-            Order order;
+            Order? order = OrderMgr.Get(guid);
 
-            try
-            {
-                order = OrderMgr.Get(guid);
-            }
-            catch(Exception)
-            {
+            if (order == null)
                 return BadRequest(new { message = "Order not found." });
-            }
 
             return Ok(new
             {
@@ -154,11 +173,13 @@ namespace order_api.Controllers
         [HttpPut("{guid}/status")]
         public ActionResult SetStatus(string guid, int status)
         {
-            Order order;
+            Order? order = OrderMgr.Get(guid);
+
+            if (order == null)
+                return BadRequest(new { message = "Order not found." });
 
             try
             {
-                order = OrderMgr.Get(guid);
                 var orderStatus = (OrderStatus)status;
 
                 // Validate status
@@ -183,11 +204,13 @@ namespace order_api.Controllers
         [HttpPut("{guid}/price")]
         public ActionResult SetPrice(string guid, decimal price)
         {
-            Order order;
+            Order? order = OrderMgr.Get(guid);
+
+            if (order == null)
+                return BadRequest(new { message = "Order not found." });
 
             try
             {
-                order = OrderMgr.Get(guid);
                 order.SetPrice(price);
             }
             catch (Exception e)
@@ -204,20 +227,31 @@ namespace order_api.Controllers
         [HttpGet("{guid}/tableno")]
         public ActionResult GetTableId(string guid)
         {
-            Order order;
+            Order? order = OrderMgr.Get(guid);
 
-            try
-            {
-                order = OrderMgr.Get(guid);
-            }
-            catch (Exception)
-            {
+            if (order == null)
                 return BadRequest(new { message = "Order not found." });
-            }
 
             return Ok(new
             {
                 tableId = order.TableId
+            });
+        }
+
+        /// <summary>
+        /// Route to get the price of the specified order.
+        /// </summary>
+        [HttpGet("{guid}/price")]
+        public ActionResult GetPrice(string guid)
+        {
+            Order? order = OrderMgr.Get(guid);
+
+            if (order == null)
+                return BadRequest(new { message = "Order not found." });
+
+            return Ok(new
+            {
+                totalPrice = order.TotalPrice
             });
         }
 
@@ -227,13 +261,15 @@ namespace order_api.Controllers
         /// <param name="tableNo">The table number</param>
         /// <returns></returns>
         [HttpPut("{guid}/tableno")]
-        public ActionResult SetPrice(string guid, int tableNo)
+        public ActionResult SetTableNo(string guid, int tableNo)
         {
-            Order order;
+            Order? order = OrderMgr.Get(guid);
+
+            if (order == null)
+                return BadRequest(new { message = "Order not found." });
 
             try
             {
-                order = OrderMgr.Get(guid);
                 order.SetTable(tableNo);
             }
             catch (Exception e)

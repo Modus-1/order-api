@@ -42,20 +42,29 @@ namespace order_api
         }
 
         /// <summary>
+        /// Deletes the specified order.
+        /// </summary>
+        /// <param name="guid">The GUID of the order to delete.</param>
+        public void DeleteOrder(string guid)
+        {
+            Order? order = Get(guid);
+
+            if (order == null)
+                throw new ArgumentException("Item not found", nameof(guid));
+
+            Orders.Remove(order);
+        }
+
+        /// <summary>
         /// Gets an order from the specified ID.
         /// </summary>
         /// <param name="id">The ID of the order to get.</param>
         /// <returns>The order.</returns>
         public Order Get(string id)
         {
-#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
-            Order o = Orders.Find((o) => o.Id == id);
-#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
-
-            if (o == null)
-                throw new Exception("Order does not exist.");
-
-            return o;
+#pragma warning disable CS8603 // Possible null reference return.
+            return Orders.Find((o) => o.Id == id);
+#pragma warning restore CS8603 // Possible null reference return.
         }
     }
 }
