@@ -74,7 +74,7 @@ namespace order_api
             Order? order = Get(guid);
 
             if (order == null)
-                throw new ArgumentException("Item not found", nameof(guid));
+                throw new ArgumentNullException(nameof(guid), "Item not found.");
 
             Orders.Remove(order);
         }
