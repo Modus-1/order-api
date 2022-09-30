@@ -66,9 +66,9 @@ public class OrderManagerTests
     {
         // Arrange 
         var input = new Order();
+        _orderManager.AddOrder(input);
         
         // Act
-        _orderManager.AddOrder(input);
         var action = () => _orderManager.AddOrder(input); // try again with same order
 
         // Assert
@@ -92,5 +92,62 @@ public class OrderManagerTests
             .NotBeEmpty()
             .And.HaveCount(1)
             .And.Contain(input);
+    }
+
+    [Fact]
+    public void DeleteOrder_WithNullInput_ShouldThrowException()
+    {
+        // Arrange
+        string? input = null;
+        
+        // Act
+        var action = () => _orderManager.DeleteOrder(input!);
+
+        // Assert
+        action
+            .Should()
+            .Throw<ArgumentNullException>();
+        _orderManager.Orders
+            .Should()
+            .BeEmpty();
+    }
+
+    [Fact]
+    public void DeleteOrder_WithEmptyOrderList_ShouldThrowException()
+    {
+        // Arrange
+        var input = Guid.NewGuid().ToString();
+
+        // Act
+        var action = () => _orderManager.DeleteOrder(input);
+
+        // Assert
+        action
+            .Should()
+            .Throw<ArgumentNullException>();
+        _orderManager.Orders
+            .Should()
+            .BeEmpty();
+    }
+
+    [Fact]
+    public void DeleteOrder_WithCorrectOrder_ShouldRemoveOrder()
+    {
+        // Arrange
+        var order = new Order();
+        _orderManager.AddOrder(order);
+        _orderManager.AddOrder(new Order());
+        
+        // Act
+        var action = () => _orderManager.DeleteOrder(order.Id);
+
+        // Assert
+        action
+            .Should()
+            .NotThrow();
+        _orderManager.Orders
+            .Should()
+            .NotBeEmpty()
+            .And.HaveCount(1);
     }
 }
