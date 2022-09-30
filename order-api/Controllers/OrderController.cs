@@ -134,13 +134,43 @@ namespace order_api.Controllers
             }
             catch(Exception)
             {
-                return BadRequest();
+                return BadRequest(new { message = "Order not found." });
             }
 
             return Ok(new
             {
                 status = (int)order.Status
             });
+        }
+
+        /// <summary>
+        /// Sets the order status.
+        /// </summary>
+        /// <param name="guid">The order to set the status for.</param>
+        /// <param name="status">The status to set.</param>
+        /// <returns></returns>
+        [HttpPut("{guid}/status")]
+        public ActionResult SetStatus(string guid, int status)
+        {
+            Order order;
+
+            try
+            {
+                order = OrderMgr.Get(guid);
+                var orderStatus = (OrderStatus)status;
+
+                // Validate status
+                if (!Enum.IsDefined(typeof(OrderStatus), orderStatus))
+                    throw new Exception("Status is not valid.");
+
+                order.Status = orderStatus;
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new { message = e.Message });
+            }
+
+            return Ok(order);
         }
     }
 }

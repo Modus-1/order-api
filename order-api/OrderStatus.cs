@@ -3,7 +3,7 @@
     /// <summary>
     /// An enum representing the status of an order.
     /// </summary>
-    public enum OrderStatus
+    public enum OrderStatus : uint
     {
         PLACED = 0,
         PROCESSING = 1,
