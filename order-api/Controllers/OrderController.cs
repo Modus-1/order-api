@@ -19,11 +19,6 @@ namespace order_api.Controllers
         private readonly IOrderManager _orderManager;
 
         /// <summary>
-        /// Max items per page.
-        /// </summary>
-        public const int PAGINATION_MAX_ITEMS = 10;
-
-        /// <summary>
         /// The logger.
         /// </summary>
         private readonly ILogger<OrderController> _logger;
@@ -43,28 +38,16 @@ namespace order_api.Controllers
         [HttpGet("active/{filter}")]
         public ActionResult GetAll(string filter = "all", int page = 1)
         {
-            List<Order> orders;
+            if (filter == "all")
+                return Ok(_orderManager.GetOrderSubset(page: page));
 
-            switch(filter)
-            {
-                case "all":
-                    orders = _orderManager.Orders;
-                    break;
-                case "placed":
-                    orders = _orderManager.Orders.FindAll((x) => x.Status == OrderStatus.PLACED);
-                    break;
-                case "processing":
-                    orders = _orderManager.Orders.FindAll((x) => x.Status == OrderStatus.PROCESSING);
-                    break;
-                case "ready":
-                    orders = _orderManager.Orders.FindAll((x) => x.Status == OrderStatus.READY);
-                    break;
-                default:
-                    return BadRequest();
-            }
+            var correctFilter = Enum.TryParse(filter.ToUpper(), out OrderStatus status);
+            if (!correctFilter)
+                return BadRequest("No such filter exists.");
 
-            int startIndex = (page - 1) * PAGINATION_MAX_ITEMS;
-            return Ok(orders.Take(new Range(startIndex, startIndex + PAGINATION_MAX_ITEMS)));
+            return Ok(
+                _orderManager.GetOrderSubset(status, page)
+            );
         }
 
         /// <summary>

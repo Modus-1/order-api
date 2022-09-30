@@ -20,6 +20,11 @@ namespace order_api.Managers
         private IMongoCollection<Order>? FinishedOrderCol { get; set; }
 
         /// <summary>
+        /// Max items per page.
+        /// </summary>
+        private static int PaginationMaxItems => 10;
+
+        /// <summary>
         /// A list containing all active orders.
         /// </summary>
         public List<Order> Orders { get; set; } = new List<Order>();
@@ -85,6 +90,24 @@ namespace order_api.Managers
         public Order? GetOrder(string id)
         {
             return Orders.Find((o) => o.Id == id);
+        }
+
+        /// <summary>
+        /// Gets a subset of orders, depending on status and page.
+        /// </summary>
+        /// <param name="status">The defined status of the order. If null, all statuses are included.</param>
+        /// <param name="page">The page to grab.</param>
+        /// <returns></returns>
+        public List<Order> GetOrderSubset(OrderStatus? status = null, int page = 1)
+        {
+            if (status is null) 
+                return Orders.Skip(page - 1 * PaginationMaxItems).Take(PaginationMaxItems).ToList();
+
+            return Orders
+                .Where(o => o.Status == status)
+                .Skip(page - 1 * PaginationMaxItems)
+                .Take(PaginationMaxItems)
+                .ToList();
         }
 
         /// <summary>
