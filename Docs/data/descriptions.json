@@ -78,6 +78,82 @@
         "path": "/Order/{guid}",
         "description": [
             "Returns the current state of the specified order."
-        ]
+        ],
+        "responseBodies": {
+            "200": {
+                "type": "json",
+                "description": "An object representing an order.",
+                "data": {
+                    "id": "57aa8ea7-369b-4dcc-a6bc-2635a8f3e91f",
+                    "totalPrice": 0,
+                    "items": [],
+                    "tableId": 0,
+                    "status": 0
+                }
+            }
+        }
+    },
+    {
+        "method": "delete",
+        "path": "/Order/{guid}",
+        "description": [
+            "Deletes the specified order from the registry."
+        ],
+        "responseBodies": {
+            "200": {
+                "type": "json",
+                "description": "An object stating that the deletion was successful.",
+                "data": {
+                    "success": true
+                }
+            }
+        }
+    },
+    {
+        "method": "post",
+        "path": "/Order/{guid}/item",
+        "description": [
+            "Adds the specified items to a given order."
+        ],
+        "requestBody": {
+            "type": "json",
+            "description": "An array of object representing order items.",
+            "data": [
+                {
+                    "id": 132,
+                    "amount": 20,
+                    "name": "Bread"
+                },
+                {
+                    "id": 221,
+                    "amount": 4,
+                    "name": "Chicken Nuggets"
+                }
+            ]
+        },
+        "responseBodies": {
+            "200": {
+                "type": "json",
+                "description": "An object representing the current state of the order.",
+                "data": {
+                    "id": "57aa8ea7-369b-4dcc-a6bc-2635a8f3e91f",
+                    "totalPrice": 0,
+                    "items": [
+                        {
+                            "id": 132,
+                            "amount": 20,
+                            "name": "Bread"
+                        },
+                        {
+                            "id": 221,
+                            "amount": 4,
+                            "name": "Chicken Nuggets"
+                        }
+                    ],
+                    "tableId": 0,
+                    "status": 0
+                }
+            }
+        }
     }
 ]
