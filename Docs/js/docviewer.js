@@ -135,6 +135,11 @@
                     <p class="desc">${(routeMeta.description != null) ? routeMeta.description.join('\n') : "(no description)"}</p>
                 `;
 
+                // Set endpoint container event
+                epContainerEl.addEventListener('click', (e) => {
+                    explEl.style.display = (explEl.style.display == "block") ? "" : "block";
+                });
+
                 // Check for parameters
                 if(methodObj['parameters'] != null) {
                     explEl.appendChild(Dom.createHeader("Parameters"));
