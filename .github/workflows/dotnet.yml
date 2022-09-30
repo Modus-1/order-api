@@ -2,7 +2,6 @@ name: .NET Core CI
 
 on:
   push:
-    branches: [ main, develop ]
     paths-ignore:
       - '**.gitignore'
       - '**/README.md'
@@ -11,7 +10,7 @@ on:
       - '**/stylecop.ruleset'
       - '**/stylecop.json'
   pull_request:
-    branches: [ main, develop ]
+    branches: [ "main", "develop" ]
     paths-ignore:
       - '**.gitignore'
       - '**/README.md'
@@ -22,16 +21,21 @@ on:
 jobs:
   build_and_test:
     runs-on: ${{ matrix.os }} 
+
     defaults:
       run:
         shell: bash
         working-directory: order-api
     strategy: 
       matrix: 
-        os: [windows-latest]
+        os: [ubuntu-latest]
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
+      with:
+        # Disabling shallow clone is recommended for improving relevancy of reporting
+        fetch-depth: 0
+
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
@@ -40,8 +44,39 @@ jobs:
     - name: Install dependencies
       run: dotnet restore
 
+    - name: SonarCloud Begin
+      run: | 
+        dotnet tool install --global dotnet-sonarscanner
+        dotnet sonarscanner begin /o:modus-1 /k:Modus-1_order-api /d:sonar.login=${{ secrets.SONAR_TOKEN }} /s:$GITHUB_WORKSPACE/order-api/SonarQube.Analysis.xml
     - name: Build
       run: dotnet build --configuration Release --no-restore
 
     - name: Test
       run: dotnet test --no-restore --verbosity normal
+    
+    - name: SonarCloud End
+      run: dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  push:
+    needs: [build_and_test]
+    if: success() && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    
+    steps:
+
+    - uses: actions/checkout@v3
+    
+    - name: Login to DockerHub
+      uses: docker/login-action@v2.0.0
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name: Build and push Docker images
+      uses: docker/build-push-action@v3.1.1
+      with:
+        context: order-api
+        push: true
+        tags: ${{ secrets.DOCKERHUB_USERNAME }}/modus-1:order-api

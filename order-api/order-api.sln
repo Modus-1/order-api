@@ -5,6 +5,8 @@ VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "order-api", "order-api.csproj", "{94BFB8FE-F713-4BFC-9BF5-6786FEBD20A8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unit-testing", "..\Unit-testing\Unit-testing.csproj", "{356A3A0F-0C41-4F7D-BD0C-FD9211C304B0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{94BFB8FE-F713-4BFC-9BF5-6786FEBD20A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{94BFB8FE-F713-4BFC-9BF5-6786FEBD20A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{94BFB8FE-F713-4BFC-9BF5-6786FEBD20A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{356A3A0F-0C41-4F7D-BD0C-FD9211C304B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{356A3A0F-0C41-4F7D-BD0C-FD9211C304B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{356A3A0F-0C41-4F7D-BD0C-FD9211C304B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{356A3A0F-0C41-4F7D-BD0C-FD9211C304B0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
