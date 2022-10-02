@@ -16,67 +16,63 @@ public class OrderManagerTests
     {
         _orderManager = new OrderManager();
     }
-    
-    
-    [Fact]
-    public void AddOrder_WithNullOrder_ShouldThrowException()
-    {
-        // Arrange
-        Order? input = null;
-
-        // Act
-        var action = () => _orderManager.AddOrder(input!);
-
-        // Assert
-        action
-            .Should()
-            .Throw<ArgumentNullException>();
-    }
 
     [Fact]
-    public void AddOrder_WithNegativeTableId_ShouldThrowException()
+    public void AddOrder_WithNegativeTableId_ShouldReturnANegativeResponse()
     {
         // Arrange
         var input = new Order {TableId = -1};
+        var response = new Response();
 
         // Act
-        var action = () => _orderManager.AddOrder(input);
+        var action = () => response = _orderManager.AddOrder(input);
 
         // Assert
         action
             .Should()
-            .Throw<ArgumentOutOfRangeException>();
+            .NotThrow();
+        response.Successful
+            .Should()
+            .BeFalse();
     }
 
     [Fact]
-    public void AddOrder_WithNegativeTotalPrice_ShouldThrowException()
+    public void AddOrder_WithNegativeTotalPrice_ShouldReturnANegativeResponse()
     {
         // Arrange
         var input = new Order {TotalPrice = -1.00m};
+        var response = new Response();
 
         // Act
-        var action = () => _orderManager.AddOrder(input);
+        var action = () => response = _orderManager.AddOrder(input);
 
         // Assert
         action
             .Should()
-            .Throw<ArgumentOutOfRangeException>();
+            .NotThrow();
+        response.Successful
+            .Should()
+            .BeFalse();
     }
 
     [Fact]
-    public void AddOrder_WithDuplicateOrder_ShouldThrowException()
+    public void AddOrder_WithDuplicateOrder_ShouldReturnANegativeResponse()
     {
         // Arrange 
         var input = new Order();
         _orderManager.AddOrder(input);
+        var response = new Response();
         
         // Act
-        var action = () => _orderManager.AddOrder(input); // try again with same order
+        var action = () => response = _orderManager.AddOrder(input); // try again with same order
 
         // Assert
         action
             .Should()
-            .Throw<ArgumentException>();
+            .NotThrow();
+        response.Successful
+            .Should()
+            .BeFalse();
     }
 
     [Fact]
@@ -84,11 +80,18 @@ public class OrderManagerTests
     {
         // Arrange
         var input = new Order();
+        var response = new Response();
         
         // Act
-        _orderManager.AddOrder(input);
+        var action = () => response = _orderManager.AddOrder(input);
 
         // Assert
+        action
+            .Should()
+            .NotThrow();
+        response.Successful
+            .Should()
+            .BeTrue();
         _orderManager.Orders
             .Should()
             .NotBeEmpty()

@@ -53,24 +53,17 @@ namespace order_api.Controllers
         /// <summary>
         /// Route to create order.
         /// </summary>
-        /// <param name="o">The order to create.</param>
+        /// <param name="orderToAdd">The order to create.</param>
         /// <returns></returns>
         [HttpPost("create")]
-        public ActionResult CreateOrder(PlaceOrderSchema o)
+        public ActionResult CreateOrder(PlaceOrderSchema orderToAdd)
         {
-            try
-            {
-                var orderToAdd = new Order { TotalPrice = o.TotalPrice, TableId = o.TableId };
-                _orderManager.AddOrder(orderToAdd);
-                return Ok(orderToAdd);
-            }
-            catch (Exception e)
-            {
-                return BadRequest(new
-                {
-                    message = e.Message
-                });
-            }
+            var newOrder = new Order { TotalPrice = orderToAdd.TotalPrice, TableId = orderToAdd.TableId };
+            var response = _orderManager.AddOrder(newOrder);
+
+            return response.Successful
+                ? Ok(new Response<Order?> {Data = newOrder})
+                : BadRequest(new Response<Order?> {Successful = false, Message = response.Message});
         }
 
         /// <summary>
@@ -95,7 +88,7 @@ namespace order_api.Controllers
         /// <param name="guid">The GUID of the order to delete.</param>
         /// <returns></returns>
         [HttpDelete("{guid}")]
-        public ActionResult DeleteOrder(string guid)
+        public ActionResult<Response> DeleteOrder(string guid)
         {
             var success = _orderManager.DeleteOrder(guid);
 

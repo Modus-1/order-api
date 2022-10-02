@@ -45,27 +45,29 @@ namespace order_api.Managers
         /// Registers an order.
         /// </summary>
         /// <param name="order">The order to add.</param>
-        public void AddOrder(Order order)
+        /// <returns>Response with details if the addition was successful or not.</returns>
+        public Response AddOrder(Order order)
         {
-            if (order == null)
-                throw new ArgumentNullException(nameof(order), "Order cannot be null");
-
+            var message = "";
+            
             if (order.TableId < 0)
-                throw new ArgumentOutOfRangeException(nameof(order.TableId), "Table ID must be a positive integer.");
-
-//            if (string.IsNullOrEmpty(order.SessionId))
-//                throw new ArgumentNullException(nameof(order.SessionId), "Session ID cannot be null");
+                message += $" {nameof(order.TableId)} must be greater than or equal to 0.";
 
             if (order.TotalPrice < 0)
-                throw new ArgumentOutOfRangeException(nameof(order.TotalPrice), "Price must be a positive decimal.");
+                message += $" {nameof(order.TotalPrice)} must be greater than or equal to 0.";
+            
+            var alreadyExists = GetOrder(order.Id) is not null;
+            if (alreadyExists)
+                message += $" An {nameof(Order)} with {nameof(order.Id)} {order.Id} already exists.";
 
-            // Check if order already exists
-            var prevOrder = Orders.Find((o) => o.Id == order.Id);
+            if (string.IsNullOrWhiteSpace(message))
+                Orders.Add(order);
 
-            if (prevOrder != null)
-                throw new ArgumentException("Order already exists.");
-
-            Orders.Add(order);
+            return new Response
+            {
+                Successful = string.IsNullOrWhiteSpace(message),
+                Message = message
+            };
         }
 
         /// <summary>
