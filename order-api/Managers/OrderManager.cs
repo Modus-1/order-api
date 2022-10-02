@@ -97,7 +97,7 @@ namespace order_api.Managers
             {
                 Data = foundOrder,
                 Successful = foundOrder is not null,
-                Message = foundOrder is not null ? "" : "Order could not be found."
+                Message = foundOrder is not null ? "" : "404: Order could not be found."
             };
         }
 
