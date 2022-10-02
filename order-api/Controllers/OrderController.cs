@@ -97,21 +97,11 @@ namespace order_api.Controllers
         [HttpDelete("{guid}")]
         public ActionResult DeleteOrder(string guid)
         {
-            try
-            {
-                Order? order = _orderManager.GetOrder(guid);
+            var success = _orderManager.DeleteOrder(guid);
 
-                if (order == null)
-                    return BadRequest(new { message = "Order not found." });
-
-                _orderManager.DeleteOrder(guid);
-            }
-            catch(Exception e)
-            {
-                return BadRequest(new { message = e.Message });
-            }
-
-            return Ok(new { success = true });
+            return success
+                ? Ok(new Response())
+                : BadRequest(new Response {Successful = false, Message = "Could not delete order."});
         }
 
         /// <summary>

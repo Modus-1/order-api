@@ -72,14 +72,13 @@ namespace order_api.Managers
         /// Deletes the specified order.
         /// </summary>
         /// <param name="guid">The GUID of the order to delete.</param>
-        public void DeleteOrder(string guid)
+        /// <returns>Whether or not the order could be deleted, boolean.</returns>
+        public bool DeleteOrder(string guid)
         {
             var order = GetOrder(guid);
-
-            if (order == null)
-                throw new ArgumentNullException(nameof(guid), "Item not found.");
-
-            Orders.Remove(order);
+            
+            return order is not null 
+                   && Orders.Remove(order);
         }
 
         /// <summary>
