@@ -66,7 +66,7 @@ namespace order_api.Managers
             return new Response
             {
                 Successful = string.IsNullOrWhiteSpace(message),
-                Message = message
+                Message = string.IsNullOrWhiteSpace(message) ? message : "400: " + message
             };
         }
 
@@ -107,19 +107,33 @@ namespace order_api.Managers
         /// <param name="status">The defined status of the order. If null, all statuses are included.</param>
         /// <param name="page">The page to grab.</param>
         /// <returns></returns>
-        public List<Order> GetOrderSubset(OrderStatus? status = null, int page = 1)
+        public Response<List<Order>> GetOrderSubset(OrderStatus? status = null, int page = 1)
         {
-            if (status is null) 
-                return Orders
+            List<Order> results;
+
+            if (page < 1) page = 1;
+
+            if (status is null)
+                results = 
+                    Orders
                     .Skip((page - 1) * PaginationMaxItems)
                     .Take(PaginationMaxItems)
                     .ToList();
+            else
+            {
+                results = 
+                    Orders
+                    .Where(o => o.Status == status)
+                    .Skip((page - 1) * PaginationMaxItems)
+                    .Take(PaginationMaxItems)
+                    .ToList();
+            }
 
-            return Orders
-                .Where(o => o.Status == status)
-                .Skip((page - 1) * PaginationMaxItems)
-                .Take(PaginationMaxItems)
-                .ToList();
+            return new Response<List<Order>>
+            {
+                Data = results,
+                Message = results.Count != 0 ? "" : "There are no orders of the given filter in the system."
+            };
         }
 
         /// <summary>
@@ -134,7 +148,7 @@ namespace order_api.Managers
                 return new Response<Order>
                 {
                     Successful = false,
-                    Message = "New table number and/or total price need to be greater than or equal to 0."
+                    Message = "400: New table number and/or total price need to be greater than or equal to 0."
                 };
             
             var indexOfOrderToEdit = Orders.FindIndex(order => order.Id == id);
@@ -142,7 +156,7 @@ namespace order_api.Managers
                 return new Response<Order>
                 {
                     Successful = false,
-                    Message = "Could not find order."
+                    Message = "404: Could not find order."
                 };
 
             Orders[indexOfOrderToEdit].TableId = newDetails.TableId;
@@ -170,7 +184,7 @@ namespace order_api.Managers
                 return new Response<Order>
                 {
                     Successful = false,
-                    Message = "Please fill in an item name, a positive amount and an id greater than or equal to 0."
+                    Message = "400: The request needs an item name, a positive amount and an id greater than or equal to 0."
                 };
             
             var indexOfOrderToEdit = Orders.FindIndex(order => order.Id == id);
@@ -178,7 +192,7 @@ namespace order_api.Managers
                 return new Response<Order>
                 {
                     Successful = false,
-                    Message = "Could not find order."
+                    Message = "404: Could not find order."
                 };
 
             var message = "";
@@ -215,7 +229,7 @@ namespace order_api.Managers
                 return new Response<OrderItem>
                 {
                     Successful = false,
-                    Message = "Could not find order."
+                    Message = "404: Could not find order."
                 };
 
             var foundItem = Orders[indexOfOrderToSearch].Items.FirstOrDefault(item => item.Id == itemId);
@@ -224,7 +238,7 @@ namespace order_api.Managers
             {
                 Data = foundItem,
                 Successful = foundItem is not null,
-                Message = foundItem is not null ? "" : "Could not find item in order."
+                Message = foundItem is not null ? "" : "404: Could not find item in order."
             };
         }
 
@@ -241,7 +255,7 @@ namespace order_api.Managers
                 return new Response<Order>
                 {
                     Successful = false,
-                    Message = "Could not find order."
+                    Message = "404: Could not find order."
                 };
             
             var foundItem = Orders[indexOfOrderToSearch].Items.FirstOrDefault(item => item.Id == itemId);
@@ -249,7 +263,7 @@ namespace order_api.Managers
                 return new Response<Order>
                 {
                     Successful = false,
-                    Message = "Could not find the item."
+                    Message = "404: Could not find the item."
                 };
             
             Orders[indexOfOrderToSearch].Items.Remove(foundItem);

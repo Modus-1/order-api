@@ -9,7 +9,7 @@ public interface IOrderManager
     public Response AddOrder(Order order);
     public bool DeleteOrder(string guid);
     public Response<Order> GetOrder(string guid);
-    public List<Order> GetOrderSubset(OrderStatus? status = null, int page = 1);
+    public Response<List<Order>> GetOrderSubset(OrderStatus? status = null, int page = 1);
     public Response<Order> UpdateOrderDetails(string id, Order newDetails);
     public Response<Order> AddItemsToOrder(string id, OrderItem[] itemsToAdd);
     public Response<OrderItem> GetItemFromOrder(string orderId, int itemId);
