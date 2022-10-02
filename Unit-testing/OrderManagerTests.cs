@@ -97,36 +97,22 @@ public class OrderManagerTests
     }
 
     [Fact]
-    public void DeleteOrder_WithNullInput_ShouldThrowException()
-    {
-        // Arrange
-        string? input = null;
-        
-        // Act
-        var action = () => _orderManager.DeleteOrder(input!);
-
-        // Assert
-        action
-            .Should()
-            .Throw<ArgumentNullException>();
-        _orderManager.Orders
-            .Should()
-            .BeEmpty();
-    }
-
-    [Fact]
-    public void DeleteOrder_WithEmptyOrderList_ShouldThrowException()
+    public void DeleteOrder_WithEmptyOrderList_ShouldReturnFalse()
     {
         // Arrange
         var input = Guid.NewGuid().ToString();
+        var success = false;
 
         // Act
-        var action = () => _orderManager.DeleteOrder(input);
+        var action = () => success = _orderManager.DeleteOrder(input);
 
         // Assert
         action
             .Should()
-            .Throw<ArgumentNullException>();
+            .NotThrow();
+        success
+            .Should()
+            .BeFalse();
         _orderManager.Orders
             .Should()
             .BeEmpty();
@@ -139,14 +125,18 @@ public class OrderManagerTests
         var order = new Order();
         _orderManager.AddOrder(order);
         _orderManager.AddOrder(new Order());
+        var success = false;
         
         // Act
-        var action = () => _orderManager.DeleteOrder(order.Id);
+        var action = () => success =_orderManager.DeleteOrder(order.Id);
 
         // Assert
         action
             .Should()
             .NotThrow();
+        success
+            .Should()
+            .BeTrue();
         _orderManager.Orders
             .Should()
             .NotBeEmpty()
