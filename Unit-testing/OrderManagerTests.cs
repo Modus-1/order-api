@@ -152,35 +152,42 @@ public class OrderManagerTests
         // Arrange
         var order = new Order();
         _orderManager.AddOrder(order);
-        Order? result = null;
+        var response = new Response<Order>();
         
         // Act
-        var action = () => result = _orderManager.GetOrder(order.Id);
+        var action = () => response = _orderManager.GetOrder(order.Id);
 
         // Assert
         action
             .Should()
             .NotThrow();
-        result
+        response
+            .Successful
+            .Should()
+            .BeTrue();
+        response.Data
             .Should()
             .NotBeNull()
             .And.Be(order);
     }
 
     [Fact]
-    public void GetOrder_WhenNotFound_ShouldReturnNull()
+    public void GetOrder_WhenNotFound_ShouldReturnANegativeResponse()
     {
         // Arrange
-        Order? result = null;
+        var response = new Response<Order>();
         
         // Act
-        var action = () => result = _orderManager.GetOrder(Guid.NewGuid().ToString());
+        var action = () => response = _orderManager.GetOrder(Guid.NewGuid().ToString());
 
         // Assert
         action
             .Should()
             .NotThrow();
-        result
+        response.Successful
+            .Should()
+            .BeFalse();
+        response.Data
             .Should()
             .BeNull();
     }
