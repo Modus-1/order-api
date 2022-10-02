@@ -196,16 +196,19 @@ public class OrderManagerTests
     public void GetOrderSubset_WithEmptyOrderList_ShouldReturnEmptyOrderList()
     {
         // Arrange
-        var results = new List<Order>();
+        var response = new Response<List<Order>>();
         
         // Act
-        var action = () => results = _orderManager.GetOrderSubset();
+        var action = () => response = _orderManager.GetOrderSubset();
         
         // Assert
         action
             .Should()
             .NotThrow();
-        results
+        response.Successful
+            .Should()
+            .BeTrue();
+        response.Data
             .Should()
             .NotBeNull()
             .And.BeEmpty();
@@ -225,16 +228,19 @@ public class OrderManagerTests
             );
         }
 
-        var results = new List<Order>();
+        var response = new Response<List<Order>>();
 
         // Act
-        var action = () => results = _orderManager.GetOrderSubset(OrderStatus.PLACED);
+        var action = () => response = _orderManager.GetOrderSubset(OrderStatus.PLACED);
 
         // Assert
         action
             .Should()
             .NotThrow();
-        results
+        response.Successful
+            .Should()
+            .BeTrue();
+        response.Data
             .Should()
             .NotBeNull()
             .And.NotBeEmpty()
@@ -258,16 +264,19 @@ public class OrderManagerTests
             });
         }
 
-        var results = new List<Order>();
+        var response = new Response<List<Order>>();
 
         // Act
-        var action = () => results = _orderManager.GetOrderSubset(OrderStatus.PLACED);
+        var action = () => response = _orderManager.GetOrderSubset(OrderStatus.PLACED);
 
         // Assert
         action
             .Should()
             .NotThrow();
-        results
+        response.Successful
+            .Should()
+            .BeTrue();
+        response.Data
             .Should()
             .NotBeNull()
             .And.NotBeEmpty()
@@ -291,20 +300,57 @@ public class OrderManagerTests
             });
         }
 
-        var results = new List<Order>();
+        var response = new Response<List<Order>>();
 
         // Act
-        var action = () => results = _orderManager.GetOrderSubset(OrderStatus.PLACED, 2);
+        var action = () => response = _orderManager.GetOrderSubset(OrderStatus.PLACED, 2);
         
         // Assert
         action
             .Should()
             .NotThrow();
-        results
+        response.Successful
+            .Should()
+            .BeTrue();
+        response.Data
             .Should()
             .NotBeNull()
             .And.NotBeEmpty()
             .And.OnlyContain(order => order.Status == OrderStatus.PLACED)
             .And.OnlyContain(order => Convert.ToInt16(order.Id) > 10);
+    }
+
+    [Fact]
+    public void GetOrderSubset_WithNegativePageParameter_ShouldReturnFirstPage()
+    {
+        // Arrange
+        const int collectionSize = 5;
+        for (var i = 0; i < collectionSize; i++)
+        {
+            _orderManager.AddOrder(new Order
+                {
+                    Status = OrderStatus.PLACED
+                }
+            );
+        }
+
+        var response = new Response<List<Order>>();
+        
+        // Act
+        var action = () => response = _orderManager.GetOrderSubset(OrderStatus.PLACED, -1);
+        
+        // Assert
+        action
+            .Should()
+            .NotThrow();
+        response.Successful
+            .Should()
+            .BeTrue();
+        response.Data
+            .Should()
+            .NotBeNull()
+            .And.NotBeEmpty()
+            .And.HaveCount(collectionSize)
+            .And.OnlyContain(order => order.Status == OrderStatus.PLACED);
     }
 }
