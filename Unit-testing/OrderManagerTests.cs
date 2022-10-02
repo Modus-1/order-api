@@ -353,4 +353,28 @@ public class OrderManagerTests
             .And.HaveCount(collectionSize)
             .And.OnlyContain(order => order.Status == OrderStatus.PLACED);
     }
+    
+    // TODO: Tests for UpdateOrderDetails in OrderManager
+            // TODO: tableId is negative
+            // TODO: totalPrice is negative
+            // TODO: orderId could not be found
+            // TODO: order can be successfully updated
+    
+    // TODO: Tests for AddItemsToOrder in OrderManager
+            // TODO: Empty name input
+            // TODO: Amount < 1
+            // TODO: Id < 0
+            // TODO: Order cannot be found
+            // TODO: Order is already present
+            // TODO: Items can successfully be added
+            
+    // TODO: Tests for GetItemFromOrder
+            // TODO: Order cannot be found
+            // TODO: Item cannot be found
+            // TODO: item can successfully be found
+            
+    // TODO: Tests for DeleteItemFromOrder
+            // TODO: Order cannot be found
+            // TODO: Item cannot be found
+            // TODO: Item can successfully be deleted from the order
 }
