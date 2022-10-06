@@ -8,7 +8,8 @@
         /// <summary>
         /// The MongoDB Database URI.
         /// </summary>
-        public const string DATABASE_URI = ""; //"mongodb://localhost:27017";
+        public const string DATABASE_URI = ""; 
+        /* mongodb://localhost:27017 */
 
         /// <summary>
         /// The name of the database to store finished orders.

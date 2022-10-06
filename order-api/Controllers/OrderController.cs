@@ -19,14 +19,8 @@ namespace order_api.Controllers
         /// </summary>
         private readonly IOrderManager _orderManager;
 
-        /// <summary>
-        /// The logger.
-        /// </summary>
-        private readonly ILogger<OrderController> _logger;
-
-        public OrderController(ILogger<OrderController> logger, IOrderManager orderManager)
+        public OrderController( IOrderManager orderManager)
         {
-            _logger = logger;
             _orderManager = orderManager;
         }
 
