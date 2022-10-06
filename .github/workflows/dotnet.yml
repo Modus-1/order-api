@@ -52,7 +52,7 @@ jobs:
       run: dotnet build
 
     - name: Test
-      run: dotnet test --settings coverlet.runsettings --logger:trx --verbosity normal
+      run: dotnet test --settings coverlet.runsettings --logger:trx --results-directory ./TestResults --verbosity normal
     
     - name: SonarCloud End
       run: dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
