@@ -16,14 +16,9 @@ namespace order_api.Models
         }
 
         /// <summary>
-        /// The maximum number of items an order can have.
-        /// </summary>
-        public const int MAX_ITEMS = 255;
-
-        /// <summary>
         /// The ID of the order.
         /// </summary>
-        public string Id { get; set; } = Guid.NewGuid().ToString();
+        public string Id { get; init; } = Guid.NewGuid().ToString();
         
         /// <summary>
         /// Gets or sets the total order price.
@@ -33,7 +28,7 @@ namespace order_api.Models
         /// <summary>
         /// Gets or sets the list of order items.
         /// </summary>
-        public List<OrderItem> Items { get; set; } = new List<OrderItem>();
+        public List<OrderItem> Items { get; init; } = new();
 
         /// <summary>
         /// The ID of the table.
@@ -43,109 +38,11 @@ namespace order_api.Models
         /// <summary>
         /// Specifies when the order was created.
         /// </summary>
-        public DateTime CreationTime = DateTime.Now;
-
-        /// <summary>
-        /// The session ID of this order.
-        /// </summary>
-        //public string SessionId { get; set; } = string.Empty;
+        public DateTime CreationTime { get; init; } = DateTime.Now;
 
         /// <summary>
         /// Gets or sets the order status.
         /// </summary>
         public OrderStatus Status { get; set; } = OrderStatus.PLACED;
-
-        /// <summary>
-        /// Adds an item to this order.
-        /// </summary>
-        /// <param name="item">The item to add.</param>
-        public void AddItem(OrderItem item)
-        {
-            // Check order item
-            if (item == null)
-                throw new ArgumentNullException(nameof(item), "Order item cannot be null");
-
-            if (item.Amount < 1)
-                throw new ArgumentOutOfRangeException(nameof(item.Amount), "Amount must be greater than 1");
-
-            if (string.IsNullOrEmpty(item.Name))
-                throw new ArgumentOutOfRangeException(nameof(item.Name), "Item name cannot be empty.");
-
-            if (item.Id < 0)
-                throw new ArgumentOutOfRangeException(nameof(item.Id), "Item ID must be a positive integer");
-
-            // Check if item ID is already present
-#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
-            OrderItem prevItem = Items.Find((o) => o.Id == item.Id);
-#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
-
-            if (prevItem != null)
-                throw new Exception("This item already exists.");
-
-            // Check if too many items have been ordered
-            int totalItems = 0;
-
-            foreach (OrderItem oItem in Items)
-                totalItems += oItem.Amount;
-
-            // Perform check (include proposed item amount)
-            if ((totalItems + item.Amount) > MAX_ITEMS)
-                throw new ArgumentOutOfRangeException(nameof(item.Amount), "Maximum number of items in order has been reached.");
-
-            // Add the item
-            Items.Add(item);
-        }
-
-        /// <summary>
-        /// Gets the specified order item.
-        /// </summary>
-        /// <param name="id">The ID of the item to retrieve.</param>
-        /// <returns></returns>
-        public OrderItem GetItem(int id)
-        {
-#pragma warning disable CS8603 // Possible null reference return.
-            return Items.Find((o) => o.Id == id);
-#pragma warning restore CS8603 // Possible null reference return.
-        }
-
-        /// <summary>
-        /// Removes the specified item.
-        /// </summary>
-        /// <param name="id">The ID of the item to remove.</param>
-        public void RemoveItem(int id)
-        {
-            OrderItem? item = GetItem(id);
-
-            if (item == null)
-                throw new ArgumentException("Item not found", nameof(id));
-
-            Items.Remove(item);
-        }
-
-        /// <summary>
-        /// Sets the price.
-        /// </summary>
-        /// <param name="amount">The amount to set the price to.</param>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when price is a non-positive value.</exception>
-        public void SetPrice(decimal amount)
-        {
-            if (amount < 0)
-                throw new ArgumentOutOfRangeException(nameof(amount), "Price must be a positive decimal.");
-
-            TotalPrice = amount;
-        }
-
-        /// <summary>
-        /// Sets the table number.
-        /// </summary>
-        /// <param name="tableNo">The table number to set.</param>
-        /// <exception cref="ArgumentOutOfRangeException"></exception>
-        public void SetTable(int tableNo)
-        {
-            if (tableNo < 0)
-                throw new ArgumentOutOfRangeException(nameof(tableNo), "Table Number must be a positive integer.");
-
-            TableId = tableNo;
-        }
     }
 }
