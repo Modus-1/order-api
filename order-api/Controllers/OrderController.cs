@@ -233,9 +233,14 @@ namespace order_api.Controllers
                 // Finally, delete the order
                 _orderManager.DeleteOrder(orderId);
             }
-            catch (Exception e)
+            catch
             {
-                return BadRequest(new { message = e.Message });
+                return BadRequest(
+                    new Response
+                    {
+                        Message = "Could not finalize order successfully.",
+                        Successful = false
+                    });
             }
 
             return Ok(new { success = true });
