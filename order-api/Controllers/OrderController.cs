@@ -34,7 +34,7 @@ namespace order_api.Controllers
         ///     400 : If the filter did not exist.
         /// </returns>
         [HttpGet("active/{filter}")]
-        public ActionResult GetAll(string filter = "all", int page = 1)
+        public IActionResult GetAll(string filter = "all", int page = 1)
         {
             if (filter == "all")
                 return Ok(_orderManager.GetOrderSubset(page: page));
@@ -67,8 +67,8 @@ namespace order_api.Controllers
             var response = _orderManager.AddOrder(newOrder);
 
             return response.Successful
-                ? Ok(new Response<Order?> {Data = newOrder})
-                : BadRequest(new Response<Order?> {Successful = false, Message = response.Message});
+                ? Ok(new Response<Order> {Data = newOrder})
+                : BadRequest(new Response<Order> {Successful = false, Message = response.Message});
         }
 
         /// <summary>
