@@ -38,7 +38,7 @@ namespace order_api.Models
         /// <summary>
         /// Specifies when the order was created.
         /// </summary>
-        public DateTime CreationTime => DateTime.Now;
+        public DateTime CreationTime { get; init; } = DateTime.Now;
 
         /// <summary>
         /// Gets or sets the order status.
