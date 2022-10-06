@@ -52,7 +52,7 @@ jobs:
       run: dotnet build --configuration Release --no-restore
 
     - name: Test
-      run: dotnet test --no-restore --verbosity normal
+      run: dotnet test --logger trx --verbosity normal --no-build --no-restore
     
     - name: SonarCloud End
       run: dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
