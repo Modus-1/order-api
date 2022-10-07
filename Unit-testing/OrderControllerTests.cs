@@ -447,4 +447,56 @@ public class OrderControllerTests
             okResult?.Value.Should().BeOfType<Response<Order>>();
         }
     }
+
+    [Fact]
+    public void GetItem_WhenItemCanBeFound_ShouldReturnOK()
+    {
+        // Arrange 
+        _mockOrderManager
+            .Setup(manager => manager.GetItemFromOrder(TestId, It.IsAny<int>()))
+            .Returns(new Response<OrderItem>()
+            {
+                Data = new OrderItem(),
+                Message = "Mock Success",
+                Successful = true
+            });
+
+        // Act
+        var result = _orderController.GetItem(TestId, It.IsAny<int>());
+        var okResult = result as OkObjectResult;
+
+        // Assert
+        using (new AssertionScope())
+        {
+            okResult.Should().NotBeNull();
+            okResult?.StatusCode.Should().Be(StatusCodes.Status200OK);
+            okResult?.Value.Should().BeOfType<Response<OrderItem>>();
+        }
+    }
+    
+    [Fact]
+    public void GetItem_WhenOrderOrItemCannotBeFound_ShouldNotFound()
+    {
+        // Arrange 
+        _mockOrderManager
+            .Setup(manager => manager.GetItemFromOrder(TestId, It.IsAny<int>()))
+            .Returns(new Response<OrderItem>()
+            {
+                Data = null,
+                Message = "Mock Failure",
+                Successful = false
+            });
+
+        // Act
+        var result = _orderController.GetItem(TestId, It.IsAny<int>());
+        var notFoundResult = result as NotFoundObjectResult;
+
+        // Assert
+        using (new AssertionScope())
+        {
+            notFoundResult.Should().NotBeNull();
+            notFoundResult?.StatusCode.Should().Be(StatusCodes.Status404NotFound);
+            notFoundResult?.Value.Should().BeOfType<Response<OrderItem>>();
+        }
+    }
 }
