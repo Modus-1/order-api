@@ -33,6 +33,8 @@ namespace order_api.Controllers
         ///     200 : If the search was able to be initiated. <br/>
         ///     400 : If the filter did not exist.
         /// </returns>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpGet("active/{filter}")]
         public IActionResult GetAll(string filter = "all", int page = 1)
         {
