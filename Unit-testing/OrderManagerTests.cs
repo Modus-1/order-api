@@ -29,12 +29,8 @@ public class OrderManagerTests
         var action = () => response = _orderManager.AddOrder(input);
 
         // Assert
-        action
-            .Should()
-            .NotThrow();
-        response.Successful
-            .Should()
-            .BeFalse();
+        action.Should().NotThrow();
+        response.Successful.Should().BeFalse();
     }
 
     [Fact]
@@ -48,12 +44,8 @@ public class OrderManagerTests
         var action = () => response = _orderManager.AddOrder(input);
 
         // Assert
-        action
-            .Should()
-            .NotThrow();
-        response.Successful
-            .Should()
-            .BeFalse();
+        action.Should().NotThrow();
+        response.Successful.Should().BeFalse();
     }
 
     [Fact]
@@ -68,12 +60,8 @@ public class OrderManagerTests
         var action = () => response = _orderManager.AddOrder(input); // try again with same order
 
         // Assert
-        action
-            .Should()
-            .NotThrow();
-        response.Successful
-            .Should()
-            .BeFalse();
+        action.Should().NotThrow();
+        response.Successful.Should().BeFalse();
     }
 
     [Fact]
@@ -87,15 +75,9 @@ public class OrderManagerTests
         var action = () => response = _orderManager.AddOrder(input);
 
         // Assert
-        action
-            .Should()
-            .NotThrow();
-        response.Successful
-            .Should()
-            .BeTrue();
-        _orderManager.Orders
-            .Should()
-            .NotBeEmpty()
+        action.Should().NotThrow();
+        response.Successful.Should().BeTrue();
+        _orderManager.Orders.Should().NotBeEmpty()
             .And.HaveCount(1)
             .And.Contain(input);
     }
@@ -111,15 +93,9 @@ public class OrderManagerTests
         var action = () => success = _orderManager.DeleteOrder(input);
 
         // Assert
-        action
-            .Should()
-            .NotThrow();
-        success
-            .Should()
-            .BeFalse();
-        _orderManager.Orders
-            .Should()
-            .BeEmpty();
+        action.Should().NotThrow();
+        success.Should().BeFalse();
+        _orderManager.Orders.Should().BeEmpty();
     }
 
     [Fact]
@@ -135,15 +111,9 @@ public class OrderManagerTests
         var action = () => success =_orderManager.DeleteOrder(order.Id);
 
         // Assert
-        action
-            .Should()
-            .NotThrow();
-        success
-            .Should()
-            .BeTrue();
-        _orderManager.Orders
-            .Should()
-            .NotBeEmpty()
+        action.Should().NotThrow();
+        success.Should().BeTrue();
+        _orderManager.Orders.Should().NotBeEmpty()
             .And.HaveCount(1);
     }
 
@@ -159,16 +129,9 @@ public class OrderManagerTests
         var action = () => response = _orderManager.GetOrder(order.Id);
 
         // Assert
-        action
-            .Should()
-            .NotThrow();
-        response
-            .Successful
-            .Should()
-            .BeTrue();
-        response.Data
-            .Should()
-            .NotBeNull()
+        action.Should().NotThrow();
+        response.Successful.Should().BeTrue();
+        response.Data.Should().NotBeNull()
             .And.Be(order);
     }
 
@@ -182,15 +145,9 @@ public class OrderManagerTests
         var action = () => response = _orderManager.GetOrder(Guid.NewGuid().ToString());
 
         // Assert
-        action
-            .Should()
-            .NotThrow();
-        response.Successful
-            .Should()
-            .BeFalse();
-        response.Data
-            .Should()
-            .BeNull();
+        action.Should().NotThrow();
+        response.Successful.Should().BeFalse();
+        response.Data.Should().BeNull();
     }
 
     [Fact]
@@ -203,15 +160,9 @@ public class OrderManagerTests
         var action = () => response = _orderManager.GetOrderSubset();
         
         // Assert
-        action
-            .Should()
-            .NotThrow();
-        response.Successful
-            .Should()
-            .BeTrue();
-        response.Data
-            .Should()
-            .NotBeNull()
+        action.Should().NotThrow();
+        response.Successful.Should().BeTrue();
+        response.Data.Should().NotBeNull()
             .And.BeEmpty();
     }
 
@@ -235,15 +186,9 @@ public class OrderManagerTests
         var action = () => response = _orderManager.GetOrderSubset(OrderStatus.PLACED);
 
         // Assert
-        action
-            .Should()
-            .NotThrow();
-        response.Successful
-            .Should()
-            .BeTrue();
-        response.Data
-            .Should()
-            .NotBeNull()
+        action.Should().NotThrow();
+        response.Successful.Should().BeTrue();
+        response.Data.Should().NotBeNull()
             .And.NotBeEmpty()
             .And.HaveCount(collectionSize)
             .And.OnlyContain(order => order.Status == OrderStatus.PLACED);
@@ -271,15 +216,9 @@ public class OrderManagerTests
         var action = () => response = _orderManager.GetOrderSubset(OrderStatus.PLACED);
 
         // Assert
-        action
-            .Should()
-            .NotThrow();
-        response.Successful
-            .Should()
-            .BeTrue();
-        response.Data
-            .Should()
-            .NotBeNull()
+        action.Should().NotThrow();
+        response.Successful.Should().BeTrue();
+        response.Data.Should().NotBeNull()
             .And.NotBeEmpty()
             .And.HaveCount(expectedReturnCollectionSize)
             .And.OnlyContain(order => Convert.ToInt16(order.Id) % 2 == 0)
@@ -307,15 +246,9 @@ public class OrderManagerTests
         var action = () => response = _orderManager.GetOrderSubset(OrderStatus.PLACED, 2);
         
         // Assert
-        action
-            .Should()
-            .NotThrow();
-        response.Successful
-            .Should()
-            .BeTrue();
-        response.Data
-            .Should()
-            .NotBeNull()
+        action.Should().NotThrow();
+        response.Successful.Should().BeTrue();
+        response.Data.Should().NotBeNull()
             .And.NotBeEmpty()
             .And.HaveCount(expectedReturnCollectionSize)
             .And.OnlyContain(order => order.Status == OrderStatus.PLACED)
@@ -342,15 +275,9 @@ public class OrderManagerTests
         var action = () => response = _orderManager.GetOrderSubset(OrderStatus.PLACED, -1);
         
         // Assert
-        action
-            .Should()
-            .NotThrow();
-        response.Successful
-            .Should()
-            .BeTrue();
-        response.Data
-            .Should()
-            .NotBeNull()
+        action.Should().NotThrow();
+        response.Successful.Should().BeTrue();
+        response.Data.Should().NotBeNull()
             .And.NotBeEmpty()
             .And.HaveCount(collectionSize)
             .And.OnlyContain(order => order.Status == OrderStatus.PLACED);
@@ -376,18 +303,10 @@ public class OrderManagerTests
         var finalOrder = _orderManager.GetOrder(expectedOrderResult.Id).Data;
 
         // Assert
-        action
-            .Should()
-            .NotThrow();
-        response.Successful
-            .Should()
-            .BeFalse();
-        response.Data
-            .Should()
-            .BeNull();
-        finalOrder
-            .Should()
-            .NotBeNull()
+        action.Should().NotThrow();
+        response.Successful.Should().BeFalse();
+        response.Data.Should().BeNull();
+        finalOrder.Should().NotBeNull()
             .And.BeEquivalentTo(expectedOrderResult);
 
     }
@@ -412,18 +331,10 @@ public class OrderManagerTests
         var finalOrder = _orderManager.GetOrder(expectedResult.Id).Data;
 
         // Assert
-        action
-            .Should()
-            .NotThrow();
-        response.Successful
-            .Should()
-            .BeFalse();
-        response.Data
-            .Should()
-            .BeNull();
-        finalOrder
-            .Should()
-            .NotBeNull()
+        action.Should().NotThrow();
+        response.Successful.Should().BeFalse();
+        response.Data.Should().BeNull();
+        finalOrder.Should().NotBeNull()
             .And.BeEquivalentTo(expectedResult);
     }
     
@@ -441,15 +352,9 @@ public class OrderManagerTests
         });
 
         // Assert
-        action
-            .Should()
-            .NotThrow();
-        response.Successful
-            .Should()
-            .BeFalse();
-        response.Data
-            .Should()
-            .BeNull();
+        action.Should().NotThrow();
+        response.Successful.Should().BeFalse();
+        response.Data.Should().BeNull();
     }
     
     [Fact]
@@ -471,19 +376,11 @@ public class OrderManagerTests
         var finalOrder = _orderManager.GetOrder(expectedResult.Id).Data;
 
         // Assert
-        action
-            .Should()
-            .NotThrow();
-        response.Successful
-            .Should()
-            .BeTrue();
-        response.Data
-            .Should()
-            .NotBeNull()
+        action.Should().NotThrow();
+        response.Successful.Should().BeTrue();
+        response.Data.Should().NotBeNull()
             .And.BeEquivalentTo(expectedResult);
-        finalOrder
-            .Should()
-            .NotBeNull()
+        finalOrder.Should().NotBeNull()
             .And.BeEquivalentTo(expectedResult);
     }
     
@@ -501,21 +398,11 @@ public class OrderManagerTests
         var finalOrder = _orderManager.GetOrder(orderToAddItemsIn.Id).Data;
 
         // Assert
-        action
-            .Should()
-            .NotThrow();
-        response.Successful
-            .Should()
-            .BeFalse();
-        response.Data
-            .Should()
-            .BeNull();
-        finalOrder
-            .Should()
-            .NotBeNull();
-        finalOrder?.Items
-            .Should()
-            .BeEmpty();
+        action.Should().NotThrow();
+        response.Successful.Should().BeFalse();
+        response.Data.Should().BeNull();
+        finalOrder.Should().NotBeNull();
+        finalOrder?.Items.Should().BeEmpty();
     }
     
     [Fact]
@@ -532,21 +419,11 @@ public class OrderManagerTests
         var finalOrder = _orderManager.GetOrder(orderToAddItemsIn.Id).Data;
         
         // Assert
-        action
-            .Should()
-            .NotThrow();
-        response.Successful
-            .Should()
-            .BeFalse();
-        response.Data
-            .Should()
-            .BeNull();
-        finalOrder
-            .Should()
-            .NotBeNull();
-        finalOrder?.Items
-            .Should()
-            .BeEmpty();
+        action.Should().NotThrow();
+        response.Successful.Should().BeFalse();
+        response.Data.Should().BeNull();
+        finalOrder.Should().NotBeNull();
+        finalOrder?.Items.Should().BeEmpty();
     }
     
     [Fact]
@@ -563,21 +440,11 @@ public class OrderManagerTests
         var finalOrder = _orderManager.GetOrder(orderToAddItemsIn.Id).Data;
 
         // Assert
-        action
-            .Should()
-            .NotThrow();
-        response.Successful
-            .Should()
-            .BeFalse();
-        response.Data
-            .Should()
-            .BeNull();
-        finalOrder
-            .Should()
-            .NotBeNull();
-        finalOrder?.Items
-            .Should()
-            .BeEmpty();
+        action.Should().NotThrow();
+        response.Successful.Should().BeFalse();
+        response.Data.Should().BeNull();
+        finalOrder.Should().NotBeNull();
+        finalOrder?.Items.Should().BeEmpty();
     }
     
     [Fact]
@@ -591,15 +458,9 @@ public class OrderManagerTests
         var action = () => response = _orderManager.AddItemsToOrder("dud", itemsToAdd);
 
         // Assert
-        action
-            .Should()
-            .NotThrow();
-        response.Successful
-            .Should()
-            .BeFalse();
-        response.Data
-            .Should()
-            .BeNull();
+        action.Should().NotThrow();
+        response.Successful.Should().BeFalse();
+        response.Data.Should().BeNull();
     }
     
     [Fact]
@@ -637,22 +498,12 @@ public class OrderManagerTests
         var finalOrder = _orderManager.GetOrder(orderToAddItemsIn.Id).Data;
 
         // Assert
-        action
-            .Should()
-            .NotThrow();
-        response.Successful
-            .Should()
-            .BeTrue();
-        response.Message
-            .Should()
-            .NotBeEmpty();
-        response.Data
-            .Should()
-            .NotBeNull()
+        action.Should().NotThrow();
+        response.Successful.Should().BeTrue();
+        response.Message.Should().NotBeEmpty();
+        response.Data.Should().NotBeNull()
             .And.BeEquivalentTo(expectedResult);
-        finalOrder
-            .Should()
-            .NotBeNull()
+        finalOrder.Should().NotBeNull()
             .And.BeEquivalentTo(expectedResult);
     }
 
@@ -679,22 +530,12 @@ public class OrderManagerTests
         var finalOrder = _orderManager.GetOrder(orderToAddItemsIn.Id).Data;
 
         // Assert
-        action
-            .Should()
-            .NotThrow();
-        response.Successful
-            .Should()
-            .BeTrue();
-        response.Message
-            .Should()
-            .BeEmpty();
-        response.Data
-            .Should()
-            .NotBeNull()
+        action.Should().NotThrow();
+        response.Successful.Should().BeTrue();
+        response.Message.Should().BeEmpty();
+        response.Data.Should().NotBeNull()
             .And.BeEquivalentTo(expectedResult);
-        finalOrder
-            .Should()
-            .NotBeNull()
+        finalOrder.Should().NotBeNull()
             .And.BeEquivalentTo(expectedResult);
     }
             
@@ -709,15 +550,9 @@ public class OrderManagerTests
         var action = () => response = _orderManager.GetItemFromOrder("dud", itemIdToSearchFor);
 
         // Assert
-        action
-            .Should()
-            .NotThrow();
-        response.Successful
-            .Should()
-            .BeFalse();
-        response.Data
-            .Should()
-            .BeNull();
+        action.Should().NotThrow();
+        response.Successful.Should().BeFalse();
+        response.Data.Should().BeNull();
     }
     
     [Fact]
@@ -732,15 +567,9 @@ public class OrderManagerTests
         var action = () => response = _orderManager.GetItemFromOrder(orderToGetItemsFrom.Id, 1);
 
         // Assert
-        action
-            .Should()
-            .NotThrow();
-        response.Successful
-            .Should()
-            .BeFalse();
-        response.Data
-            .Should()
-            .BeNull();
+        action.Should().NotThrow();
+        response.Successful.Should().BeFalse();
+        response.Data.Should().BeNull();
     }
     
     [Fact]
@@ -758,15 +587,9 @@ public class OrderManagerTests
             _orderManager.GetItemFromOrder(orderToGetItemsFrom.Id, expectedResult.Id);
 
         // Assert
-        action
-            .Should()
-            .NotThrow();
-        response.Successful
-            .Should()
-            .BeTrue();
-        response.Data
-            .Should()
-            .NotBeNull()
+        action.Should().NotThrow();
+        response.Successful.Should().BeTrue();
+        response.Data.Should().NotBeNull()
             .And.BeEquivalentTo(expectedResult);
     }
     
@@ -781,15 +604,9 @@ public class OrderManagerTests
         var action = () => response = _orderManager.DeleteItemFromOrder("dud", itemIdToDelete);
 
         // Assert
-        action
-            .Should()
-            .NotThrow();
-        response.Successful
-            .Should()
-            .BeFalse();
-        response.Data
-            .Should()
-            .BeNull();
+        action.Should().NotThrow();
+        response.Successful.Should().BeFalse();
+        response.Data.Should().BeNull();
     }
     
     [Fact]
@@ -804,15 +621,9 @@ public class OrderManagerTests
         var action = () => response = _orderManager.DeleteItemFromOrder(orderToFindTheItemIn.Id, 1);
 
         // Assert
-        action
-            .Should()
-            .NotThrow();
-        response.Successful
-            .Should()
-            .BeFalse();
-        response.Data
-            .Should()
-            .BeNull();
+        action.Should().NotThrow();
+        response.Successful.Should().BeFalse();
+        response.Data.Should().BeNull();
     }
     
     [Fact]
@@ -844,19 +655,11 @@ public class OrderManagerTests
         var finalOrder = _orderManager.GetOrder(orderToRemoveItemsFrom.Id).Data;
 
         // Assert
-        action
-            .Should()
-            .NotThrow();
-        response.Successful
-            .Should()
-            .BeTrue();
-        response.Data
-            .Should()
-            .NotBeNull()
+        action.Should().NotThrow();
+        response.Successful.Should().BeTrue();
+        response.Data.Should().NotBeNull()
             .And.BeEquivalentTo(expectedResult);
-        finalOrder
-            .Should()
-            .NotBeNull()
+        finalOrder.Should().NotBeNull()
             .And.BeEquivalentTo(expectedResult);
     }
 }
