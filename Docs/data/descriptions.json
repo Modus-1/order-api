@@ -315,15 +315,11 @@
                 "description": "An object stating that the deletion was successful with the updated order state.",
                 "data": {
                     "data": {
-                        "data": {
-                            "id": "57aa8ea7-369b-4dcc-a6bc-2635a8f3e91f",
-                            "totalPrice": 0,
-                            "items": [],
-                            "tableId": 0,
-                            "status": 0
-                        },
-                        "successful": true,
-                        "message": ""
+                        "id": "57aa8ea7-369b-4dcc-a6bc-2635a8f3e91f",
+                        "totalPrice": 0,
+                        "items": [],
+                        "tableId": 0,
+                        "status": 0
                     },
                     "successful": true,
                     "message": ""
