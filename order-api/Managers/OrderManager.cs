@@ -28,7 +28,7 @@ namespace order_api.Managers
         /// <summary>
         /// A list containing all active orders.
         /// </summary>
-        public List<Order> Orders { get; set; } = new List<Order>();
+        public List<Order> Orders { get; set; }
 
         /// <summary>
         /// Constructs a new order manager.
@@ -40,6 +40,8 @@ namespace order_api.Managers
                 DbClient = new MongoClient(DatabaseConfiguration.DATABASE_URI);
                 FinishedOrderCol = DbClient.GetDatabase(DatabaseConfiguration.DB_NAME).GetCollection<Order>(DatabaseConfiguration.COL_NAME_FINISHED);
             }
+
+            Orders = new List<Order>();
         }
 
         /// <summary>

@@ -44,5 +44,10 @@ namespace order_api.Models
         /// Gets or sets the order status.
         /// </summary>
         public OrderStatus Status { get; set; } = OrderStatus.PLACED;
+
+        /// <summary>
+        /// Any special notes the customer has added to their order.
+        /// </summary>
+        public string Note { get; set; } = string.Empty;
     }
 }

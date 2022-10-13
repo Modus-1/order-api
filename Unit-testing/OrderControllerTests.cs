@@ -124,7 +124,7 @@ public class OrderControllerTests
     public void CreateOrder_WithCorrectOrderParameters_ShouldReturnOK()
     {
         // Arrange
-        var orderToAdd = new PlaceOrderSchema {TableId = 420, TotalPrice = 69.0m};
+        var orderToAdd = new PlaceOrderSchema {TableId = 420, TotalPrice = 69.0m, Note = "hoi"};
         _mockOrderManager
             .Setup(manager => manager.AddOrder(It.IsAny<Order>()))
             .Returns(new Response

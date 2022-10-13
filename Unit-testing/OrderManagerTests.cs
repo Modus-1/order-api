@@ -17,6 +17,8 @@ public class OrderManagerTests
     {
         _orderManager = new OrderManager();
     }
+    
+    
 
     [Fact]
     public void AddOrder_WithNegativeTableId_ShouldReturnANegativeResponse()
@@ -68,7 +70,10 @@ public class OrderManagerTests
     public void AddOrder_WithNormalOrder_ShouldPopulateOrderList()
     {
         // Arrange
-        var input = new Order();
+        var input = new Order
+        {
+            Note = "test"
+        };
         var response = new Response();
         
         // Act
