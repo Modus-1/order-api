@@ -16,14 +16,9 @@ namespace order_api.Models
         }
 
         /// <summary>
-        /// The maximum number of items an order can have.
-        /// </summary>
-        public const int MAX_ITEMS = 255;
-
-        /// <summary>
         /// The ID of the order.
         /// </summary>
-        public string Id { get; set; } = Guid.NewGuid().ToString();
+        public string Id { get; init; } = Guid.NewGuid().ToString();
         
         /// <summary>
         /// Gets or sets the total order price.
@@ -33,7 +28,7 @@ namespace order_api.Models
         /// <summary>
         /// Gets or sets the list of order items.
         /// </summary>
-        public List<OrderItem> Items { get; set; } = new List<OrderItem>();
+        public List<OrderItem> Items { get; init; } = new();
 
         /// <summary>
         /// The ID of the table.
@@ -43,11 +38,16 @@ namespace order_api.Models
         /// <summary>
         /// Specifies when the order was created.
         /// </summary>
-        public DateTime CreationTime = DateTime.Now;
+        public DateTime CreationTime { get; init; } = DateTime.Now;
 
         /// <summary>
         /// Gets or sets the order status.
         /// </summary>
         public OrderStatus Status { get; set; } = OrderStatus.PLACED;
+
+        /// <summary>
+        /// Any special notes the customer has added to their order.
+        /// </summary>
+        public string Note { get; set; } = string.Empty;
     }
 }

@@ -1,4 +1,5 @@
-﻿using MongoDB.Driver;
+﻿using System.Text;
+using MongoDB.Driver;
 using order_api.Config;
 using order_api.Models;
 
@@ -27,7 +28,7 @@ namespace order_api.Managers
         /// <summary>
         /// A list containing all active orders.
         /// </summary>
-        public List<Order> Orders { get; set; } = new List<Order>();
+        public List<Order> Orders { get; set; }
 
         /// <summary>
         /// Constructs a new order manager.
@@ -39,6 +40,8 @@ namespace order_api.Managers
                 DbClient = new MongoClient(DatabaseConfiguration.DATABASE_URI);
                 FinishedOrderCol = DbClient.GetDatabase(DatabaseConfiguration.DB_NAME).GetCollection<Order>(DatabaseConfiguration.COL_NAME_FINISHED);
             }
+
+            Orders = new List<Order>();
         }
 
         /// <summary>
@@ -87,11 +90,11 @@ namespace order_api.Managers
         /// <summary>
         /// Gets an order from the specified ID.
         /// </summary>
-        /// <param name="id">The ID of the order to get.</param>
+        /// <param name="guid">The ID of the order to get.</param>
         /// <returns>The order.</returns>
-        public Response<Order> GetOrder(string id)
+        public Response<Order> GetOrder(string guid)
         {
-            var foundOrder = Orders.Find(order => order.Id == id);
+            var foundOrder = Orders.Find(order => order.Id == guid);
 
             return new Response<Order>
             {
@@ -194,8 +197,8 @@ namespace order_api.Managers
                     Successful = false,
                     Message = "404: Could not find order."
                 };
-
-            var message = "";
+            
+            var builder = new StringBuilder();
 
             foreach (var item in itemsToAdd)
             {
@@ -204,15 +207,15 @@ namespace order_api.Managers
                     Orders[indexOfOrderToEdit].Items.Add(item);
                 else
                 {
-                    message += $" An item with name \"{item.Name}\" and id \"{item.Id}\" could not be added, because" +
-                               $" its id already existed in the order.";
+                    builder.Append($"An item with name \"{item.Name}\" and id \"{item.Id}\" could not be added,");
+                    builder.Append(" because its id already existed in the order.");
                 }
             }
 
             return new Response<Order>
             {
                 Data = Orders[indexOfOrderToEdit],
-                Message = message
+                Message = builder.ToString()
             };
         }
 

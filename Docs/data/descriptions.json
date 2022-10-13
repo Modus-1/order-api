@@ -7,42 +7,55 @@
             "<br>By default, up to 10 orders per request are served. You can retrieve more by increasing the <code>page</code> query parameter until there is nothing left."
         ],
         "responseBodies": {
+            "400": {
+                "type": "json",
+                "description": "Error if the filter did not exist.",
+                "data": {
+                    "data": null,
+                    "successful": false,
+                    "message": "400: No such filter exists."
+                }
+            },
             "200": {
                 "type": "json",
                 "description": "An array of objects representing orders. The objects below are shown with the 'all' filter.",
-                "data": [
-                    {
-                        "id": "57aa8ea7-369b-4dcc-a6bc-2635a8f3e91f",
-                        "totalPrice": 20,
-                        "items": [
-                            {
-                                "id": 10,
-                                "amount": 2,
-                                "name": "Pancakes"
-                            },
-                            {
-                                "id": 31,
-                                "amount": 4,
-                                "name": "Cola"
-                            }
-                        ],
-                        "tableId": 2,
-                        "status": 1
-                    },
-                    {
-                        "id": "f7b9ba83-e7eb-4647-9ff4-ee2ab5dcff35",
-                        "totalPrice": 8.75,
-                        "items": [
-                            {
-                                "id": 1,
-                                "amount": 2,
-                                "name": "Spaghetti"
-                            }
-                        ],
-                        "tableId": 11,
-                        "status": 0
-                    }
-                ]
+                "data": {
+                    "data": [
+                        {
+                            "id": "57aa8ea7-369b-4dcc-a6bc-2635a8f3e91f",
+                            "totalPrice": 20,
+                            "items": [
+                                {
+                                    "id": 10,
+                                    "amount": 2,
+                                    "name": "Pancakes"
+                                },
+                                {
+                                    "id": 31,
+                                    "amount": 4,
+                                    "name": "Cola"
+                                }
+                            ],
+                            "tableId": 2,
+                            "status": 1
+                        },
+                        {
+                            "id": "f7b9ba83-e7eb-4647-9ff4-ee2ab5dcff35",
+                            "totalPrice": 8.75,
+                            "items": [
+                                {
+                                    "id": 1,
+                                    "amount": 2,
+                                    "name": "Spaghetti"
+                                }
+                            ],
+                            "tableId": 11,
+                            "status": 0
+                        }
+                    ],
+                    "successful": true,
+                    "message": ""
+                }
             }
         }
     },
@@ -60,78 +73,174 @@
             }
         },
         "responseBodies": {
+            "400": {
+                "type": "json",
+                "description": "Error if the creation failed.",
+                "data": {
+                    "successful": false,
+                    "message": "400: Error message here of specific error"
+                }
+            },
             "200": {
                 "type": "json",
                 "description": "An object representing the created order.",
                 "data": {
-                    "id": "57aa8ea7-369b-4dcc-a6bc-2635a8f3e91f",
-                    "totalPrice": 0,
-                    "items": [],
-                    "tableId": 0,
-                    "status": 0
+                    "data": {
+                        "id": "57aa8ea7-369b-4dcc-a6bc-2635a8f3e91f",
+                        "totalPrice": 0,
+                        "items": [],
+                        "tableId": 0,
+                        "status": 0
+                    },
+                    "successful": true,
+                    "message": ""
                 }
             }
         }
     },
     {
         "method": "get",
-        "path": "/Order/{guid}",
+        "path": "/Order/{orderId}",
         "description": [
             "Returns the current state of the specified order."
         ],
         "responseBodies": {
+            "404": {
+                "type": "json",
+                "description": "Error if the order couldn't be found.",
+                "data": {
+                    "data": null,
+                    "successful": false,
+                    "message": "404: Order not found"
+                }
+            },
             "200": {
                 "type": "json",
                 "description": "An object representing an order.",
                 "data": {
-                    "id": "57aa8ea7-369b-4dcc-a6bc-2635a8f3e91f",
-                    "totalPrice": 0,
-                    "items": [],
-                    "tableId": 0,
-                    "status": 0
+                    "data": {
+                        "id": "57aa8ea7-369b-4dcc-a6bc-2635a8f3e91f",
+                        "totalPrice": 0,
+                        "items": [],
+                        "tableId": 0,
+                        "status": 0
+                    },
+                    "successful": true,
+                    "message": ""
+                }
+            }
+        }
+    },
+    {
+        "method": "put",
+        "path": "/Order/{orderId}",
+        "description": [
+            "Updates the specified order."
+        ],
+        "responseBodies": {
+            "404": {
+                "type": "json",
+                "description": "Error if the order couldn't be found.",
+                "data": {
+                    "data": null,
+                    "successful": false,
+                    "message": "404: Order not found"
+                }
+            },
+            "400": {
+                "type": "json",
+                "description": "Error if the order couldn't be updated.",
+                "data": {
+                    "data": null,
+                    "successful": false,
+                    "message": "400: Could not update"
+                }
+            },
+            "200": {
+                "type": "json",
+                "description": "An object representing an order.",
+                "data": {
+                    "data": {
+                        "id": "57aa8ea7-369b-4dcc-a6bc-2635a8f3e91f",
+                        "totalPrice": 0,
+                        "items": [],
+                        "tableId": 0,
+                        "status": 0
+                    },
+                    "successful": true,
+                    "message": ""
                 }
             }
         }
     },
     {
         "method": "delete",
-        "path": "/Order/{guid}",
+        "path": "/Order/{orderId}",
         "description": [
             "Deletes the specified order from the registry."
         ],
         "responseBodies": {
+            "400": {
+                "type": "json",
+                "description": "Error object",
+                "data": {
+                    "successful": false,
+                    "message": "400: Could not delete order."
+                }
+            },
             "200": {
                 "type": "json",
                 "description": "An object stating that the deletion was successful.",
                 "data": {
-                    "success": true
+                    "successful": true,
+                    "message": ""
                 }
             }
         }
     },
     {
         "method": "post",
-        "path": "/Order/{guid}/item",
+        "path": "/Order/{orderId}/item",
         "description": [
             "Adds the specified items to a given order."
         ],
         "requestBody": {
             "type": "json",
             "description": "An array of object representing order items.",
-            "data": [
-                {
-                    "id": 132,
-                    "amount": 20,
-                    "name": "Bread"
-                },
-                {
-                    "id": 221,
-                    "amount": 4,
-                    "name": "Chicken Nuggets"
-                }
-            ]
+            "data": {
+                "data": [
+                    {
+                        "id": 132,
+                        "amount": 20,
+                        "name": "Bread"
+                    },
+                    {
+                        "id": 221,
+                        "amount": 4,
+                        "name": "Chicken Nuggets"
+                    }
+                ],
+                "success": false,
+                "message": ""
+            }
         },
         "responseBodies": {
+            "404": {
+                "type": "json",
+                "description": "Error object",
+                "data": {
+                    "successful": false,
+                    "message": "404: Order not found."
+                }
+            },
+            "400": {
+                "type": "json",
+                "description": "Error object",
+                "data": {
+                    "successful": false,
+                    "message": "400: Invalid parameters."
+                }
+            },
             "200": {
                 "type": "json",
                 "description": "An object representing the current state of the order.",
@@ -158,158 +267,95 @@
     },
     {
         "method": "get",
-        "path": "/Order/{guid}/item/{id}",
+        "path": "/Order/{orderId}/item/{itemId}",
         "description": [
             "Gets the state of the specified item."
         ],
         "responseBodies": {
+            "404": {
+                "type": "json",
+                "description": "Error object",
+                "data": {
+                    "successful": false,
+                    "message": "404: Order or item not found."
+                }
+            },
             "200": {
                 "type": "json",
                 "description": "An object representing the current state of the item.",
                 "data": {
-                    "id": 132,
-                    "amount": 20,
-                    "name": "Bread"
+                    "data": {
+                        "id": 132,
+                        "amount": 20,
+                        "name": "Bread"
+                    },
+                    "successful": true,
+                    "message": ""
                 }
             }
         }
     },
     {
         "method": "delete",
-        "path": "/Order/{guid}/item/{id}",
+        "path": "/Order/{orderId}/item/{itemId}",
         "description": [
             "Deletes the specified item from the order."
         ],
         "responseBodies": {
-            "200": {
+            "404": {
                 "type": "json",
-                "description": "An object stating that the deletion was successful.",
+                "description": "Error object",
                 "data": {
-                    "success": true
+                    "successful": false,
+                    "message": "404: Order or item not found."
                 }
-            }
-        }
-    },
-    {
-        "method": "get",
-        "path": "/Order/{guid}/status",
-        "description": [
-            "Gets the status of the specified order."
-        ],
-        "responseBodies": {
+            },
             "200": {
                 "type": "json",
-                "description": "An object representing the current status. [0 = Placed, 1 = Processing, 2 = Ready, 3 = Done]",
+                "description": "An object stating that the deletion was successful with the updated order state.",
                 "data": {
-                    "status": 0
-                }
-            }
-        }
-    },
-    {
-        "method": "put",
-        "path": "/Order/{guid}/status",
-        "description": [
-            "Sets the status of the specified order."
-        ],
-        "responseBodies": {
-            "200": {
-                "type": "json",
-                "description": "An object representing the current state of the order.",
-                "data": {
-                    "id": "57aa8ea7-369b-4dcc-a6bc-2635a8f3e91f",
-                    "totalPrice": 0,
-                    "items": [],
-                    "tableId": 0,
-                    "status": 2
-                }
-            }
-        }
-    },
-    {
-        "method": "put",
-        "path": "/Order/{guid}/price",
-        "description": [
-            "Sets the price of the specified order."
-        ],
-        "responseBodies": {
-            "200": {
-                "type": "json",
-                "description": "An object representing the current state of the order.",
-                "data": {
-                    "id": "57aa8ea7-369b-4dcc-a6bc-2635a8f3e91f",
-                    "totalPrice": 100,
-                    "items": [],
-                    "tableId": 0,
-                    "status": 2
-                }
-            }
-        }
-    },
-    {
-        "method": "get",
-        "path": "/Order/{guid}/price",
-        "description": [
-            "Gets the price of the specified order."
-        ],
-        "responseBodies": {
-            "200": {
-                "type": "json",
-                "description": "An object containing the current price.",
-                "data": {
-                    "totalPrice": 100
-                }
-            }
-        }
-    },
-    {
-        "method": "get",
-        "path": "/Order/{guid}/tableno",
-        "description": [
-            "Gets the table number of the specified order."
-        ],
-        "responseBodies": {
-            "200": {
-                "type": "json",
-                "description": "An object containing the table number.",
-                "data": {
-                    "tableId": 20
-                }
-            }
-        }
-    },
-    {
-        "method": "put",
-        "path": "/Order/{guid}/tableno",
-        "description": [
-            "Sets the table number of the specified order."
-        ],
-        "responseBodies": {
-            "200": {
-                "type": "json",
-                "description": "An object representing the current state of the order.",
-                "data": {
-                    "id": "57aa8ea7-369b-4dcc-a6bc-2635a8f3e91f",
-                    "totalPrice": 100,
-                    "items": [],
-                    "tableId": 0,
-                    "status": 2
+                    "data": {
+                        "id": "57aa8ea7-369b-4dcc-a6bc-2635a8f3e91f",
+                        "totalPrice": 0,
+                        "items": [],
+                        "tableId": 0,
+                        "status": 0
+                    },
+                    "successful": true,
+                    "message": ""
                 }
             }
         }
     },
     {
         "method": "post",
-        "path": "/Order/{guid}/finalize",
+        "path": "/Order/{orderId}/finalize",
         "description": [
             "Finalizes the specified order (marks the order as complete)."
         ],
         "responseBodies": {
+            "404": {
+                "type": "json",
+                "description": "Error object",
+                "data": {
+                    "successful": false,
+                    "message": "404: Order not found."
+                }
+            },
+            "400": {
+                "type": "json",
+                "description": "Error object",
+                "data": {
+                    "successful": false,
+                    "message": "400: Could not finalize."
+                }
+            },
             "200": {
                 "type": "json",
                 "description": "An object stating that the operation was successful.",
                 "data": {
-                    "success": true
+                    "successful": true,
+                    "message": ""
                 }
             }
         }

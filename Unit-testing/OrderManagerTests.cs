@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 using FluentAssertions;
 using order_api;
@@ -10,12 +11,14 @@ namespace Unit_testing;
 
 public class OrderManagerTests
 {
-    private OrderManager _orderManager;
+    private readonly OrderManager _orderManager;
     
     public OrderManagerTests()
     {
         _orderManager = new OrderManager();
     }
+    
+    
 
     [Fact]
     public void AddOrder_WithNegativeTableId_ShouldReturnANegativeResponse()
@@ -28,12 +31,8 @@ public class OrderManagerTests
         var action = () => response = _orderManager.AddOrder(input);
 
         // Assert
-        action
-            .Should()
-            .NotThrow();
-        response.Successful
-            .Should()
-            .BeFalse();
+        action.Should().NotThrow();
+        response.Successful.Should().BeFalse();
     }
 
     [Fact]
@@ -47,12 +46,8 @@ public class OrderManagerTests
         var action = () => response = _orderManager.AddOrder(input);
 
         // Assert
-        action
-            .Should()
-            .NotThrow();
-        response.Successful
-            .Should()
-            .BeFalse();
+        action.Should().NotThrow();
+        response.Successful.Should().BeFalse();
     }
 
     [Fact]
@@ -67,34 +62,27 @@ public class OrderManagerTests
         var action = () => response = _orderManager.AddOrder(input); // try again with same order
 
         // Assert
-        action
-            .Should()
-            .NotThrow();
-        response.Successful
-            .Should()
-            .BeFalse();
+        action.Should().NotThrow();
+        response.Successful.Should().BeFalse();
     }
 
     [Fact]
     public void AddOrder_WithNormalOrder_ShouldPopulateOrderList()
     {
         // Arrange
-        var input = new Order();
+        var input = new Order
+        {
+            Note = "test"
+        };
         var response = new Response();
         
         // Act
         var action = () => response = _orderManager.AddOrder(input);
 
         // Assert
-        action
-            .Should()
-            .NotThrow();
-        response.Successful
-            .Should()
-            .BeTrue();
-        _orderManager.Orders
-            .Should()
-            .NotBeEmpty()
+        action.Should().NotThrow();
+        response.Successful.Should().BeTrue();
+        _orderManager.Orders.Should().NotBeEmpty()
             .And.HaveCount(1)
             .And.Contain(input);
     }
@@ -110,15 +98,9 @@ public class OrderManagerTests
         var action = () => success = _orderManager.DeleteOrder(input);
 
         // Assert
-        action
-            .Should()
-            .NotThrow();
-        success
-            .Should()
-            .BeFalse();
-        _orderManager.Orders
-            .Should()
-            .BeEmpty();
+        action.Should().NotThrow();
+        success.Should().BeFalse();
+        _orderManager.Orders.Should().BeEmpty();
     }
 
     [Fact]
@@ -134,15 +116,9 @@ public class OrderManagerTests
         var action = () => success =_orderManager.DeleteOrder(order.Id);
 
         // Assert
-        action
-            .Should()
-            .NotThrow();
-        success
-            .Should()
-            .BeTrue();
-        _orderManager.Orders
-            .Should()
-            .NotBeEmpty()
+        action.Should().NotThrow();
+        success.Should().BeTrue();
+        _orderManager.Orders.Should().NotBeEmpty()
             .And.HaveCount(1);
     }
 
@@ -158,16 +134,9 @@ public class OrderManagerTests
         var action = () => response = _orderManager.GetOrder(order.Id);
 
         // Assert
-        action
-            .Should()
-            .NotThrow();
-        response
-            .Successful
-            .Should()
-            .BeTrue();
-        response.Data
-            .Should()
-            .NotBeNull()
+        action.Should().NotThrow();
+        response.Successful.Should().BeTrue();
+        response.Data.Should().NotBeNull()
             .And.Be(order);
     }
 
@@ -181,15 +150,9 @@ public class OrderManagerTests
         var action = () => response = _orderManager.GetOrder(Guid.NewGuid().ToString());
 
         // Assert
-        action
-            .Should()
-            .NotThrow();
-        response.Successful
-            .Should()
-            .BeFalse();
-        response.Data
-            .Should()
-            .BeNull();
+        action.Should().NotThrow();
+        response.Successful.Should().BeFalse();
+        response.Data.Should().BeNull();
     }
 
     [Fact]
@@ -202,15 +165,9 @@ public class OrderManagerTests
         var action = () => response = _orderManager.GetOrderSubset();
         
         // Assert
-        action
-            .Should()
-            .NotThrow();
-        response.Successful
-            .Should()
-            .BeTrue();
-        response.Data
-            .Should()
-            .NotBeNull()
+        action.Should().NotThrow();
+        response.Successful.Should().BeTrue();
+        response.Data.Should().NotBeNull()
             .And.BeEmpty();
     }
 
@@ -234,15 +191,9 @@ public class OrderManagerTests
         var action = () => response = _orderManager.GetOrderSubset(OrderStatus.PLACED);
 
         // Assert
-        action
-            .Should()
-            .NotThrow();
-        response.Successful
-            .Should()
-            .BeTrue();
-        response.Data
-            .Should()
-            .NotBeNull()
+        action.Should().NotThrow();
+        response.Successful.Should().BeTrue();
+        response.Data.Should().NotBeNull()
             .And.NotBeEmpty()
             .And.HaveCount(collectionSize)
             .And.OnlyContain(order => order.Status == OrderStatus.PLACED);
@@ -270,15 +221,9 @@ public class OrderManagerTests
         var action = () => response = _orderManager.GetOrderSubset(OrderStatus.PLACED);
 
         // Assert
-        action
-            .Should()
-            .NotThrow();
-        response.Successful
-            .Should()
-            .BeTrue();
-        response.Data
-            .Should()
-            .NotBeNull()
+        action.Should().NotThrow();
+        response.Successful.Should().BeTrue();
+        response.Data.Should().NotBeNull()
             .And.NotBeEmpty()
             .And.HaveCount(expectedReturnCollectionSize)
             .And.OnlyContain(order => Convert.ToInt16(order.Id) % 2 == 0)
@@ -306,16 +251,11 @@ public class OrderManagerTests
         var action = () => response = _orderManager.GetOrderSubset(OrderStatus.PLACED, 2);
         
         // Assert
-        action
-            .Should()
-            .NotThrow();
-        response.Successful
-            .Should()
-            .BeTrue();
-        response.Data
-            .Should()
-            .NotBeNull()
+        action.Should().NotThrow();
+        response.Successful.Should().BeTrue();
+        response.Data.Should().NotBeNull()
             .And.NotBeEmpty()
+            .And.HaveCount(expectedReturnCollectionSize)
             .And.OnlyContain(order => order.Status == OrderStatus.PLACED)
             .And.OnlyContain(order => Convert.ToInt16(order.Id) > 10);
     }
@@ -340,41 +280,391 @@ public class OrderManagerTests
         var action = () => response = _orderManager.GetOrderSubset(OrderStatus.PLACED, -1);
         
         // Assert
-        action
-            .Should()
-            .NotThrow();
-        response.Successful
-            .Should()
-            .BeTrue();
-        response.Data
-            .Should()
-            .NotBeNull()
+        action.Should().NotThrow();
+        response.Successful.Should().BeTrue();
+        response.Data.Should().NotBeNull()
             .And.NotBeEmpty()
             .And.HaveCount(collectionSize)
             .And.OnlyContain(order => order.Status == OrderStatus.PLACED);
     }
     
-    // TODO: Tests for UpdateOrderDetails in OrderManager
-            // TODO: tableId is negative
-            // TODO: totalPrice is negative
-            // TODO: orderId could not be found
-            // TODO: order can be successfully updated
+    [Fact]
+    public void UpdateOrderDetails_WithNegativeTableId_ShouldReturnANegativeResponse()
+    {
+        // Arrange
+        var expectedOrderResult = new Order
+        {
+            TableId = 1
+        };
+        _orderManager.AddOrder(expectedOrderResult);
+        var response = new Response<Order>();
+
+        // Act
+        var action = () => response = _orderManager.UpdateOrderDetails(expectedOrderResult.Id, new Order
+        {
+            Id = expectedOrderResult.Id,
+            TableId = -1
+        });
+        var finalOrder = _orderManager.GetOrder(expectedOrderResult.Id).Data;
+
+        // Assert
+        action.Should().NotThrow();
+        response.Successful.Should().BeFalse();
+        response.Data.Should().BeNull();
+        finalOrder.Should().NotBeNull()
+            .And.BeEquivalentTo(expectedOrderResult);
+
+    }
     
-    // TODO: Tests for AddItemsToOrder in OrderManager
-            // TODO: Empty name input
-            // TODO: Amount < 1
-            // TODO: Id < 0
-            // TODO: Order cannot be found
-            // TODO: Order is already present
-            // TODO: Items can successfully be added
+    [Fact]
+    public void UpdateOrderDetails_WithNegativeOrderPrice_ShouldReturnANegativeResponse()
+    {
+        // Arrange
+        var expectedResult = new Order
+        {
+            TotalPrice = 42m
+        };
+        _orderManager.AddOrder(expectedResult);
+        var response = new Response<Order>();
+
+        // Act
+        var action = () => response = _orderManager.UpdateOrderDetails(expectedResult.Id, new Order
+        {
+            Id = expectedResult.Id,
+            TotalPrice = -1
+        });
+        var finalOrder = _orderManager.GetOrder(expectedResult.Id).Data;
+
+        // Assert
+        action.Should().NotThrow();
+        response.Successful.Should().BeFalse();
+        response.Data.Should().BeNull();
+        finalOrder.Should().NotBeNull()
+            .And.BeEquivalentTo(expectedResult);
+    }
+    
+    [Fact]
+    public void UpdateOrderDetails_WhenOrderCannotBeFound_ShouldReturnANegativeResponse()
+    {
+        // Arrange
+        var response = new Response<Order>();
+        
+        // Act
+        var action = () => response = _orderManager.UpdateOrderDetails("fake", new Order
+        {
+            Id = "fake",
+            TableId = 42
+        });
+
+        // Assert
+        action.Should().NotThrow();
+        response.Successful.Should().BeFalse();
+        response.Data.Should().BeNull();
+    }
+    
+    [Fact]
+    public void UpdateOrderDetails_WhenOrderCanBeSuccessfullyUpdated_ShouldReturnEditedOrder()
+    {
+        // Arrange
+        var expectedResult = new Order
+        {
+            Id = "Test",
+            TableId = 42,
+            TotalPrice = 69m,
+            CreationTime = DateTime.Today
+        };
+        _orderManager.AddOrder(new Order {Id = expectedResult.Id, CreationTime = DateTime.Today});
+        var response = new Response<Order>();
+        
+        // Act
+        var action = () => response = _orderManager.UpdateOrderDetails(expectedResult.Id, expectedResult);
+        var finalOrder = _orderManager.GetOrder(expectedResult.Id).Data;
+
+        // Assert
+        action.Should().NotThrow();
+        response.Successful.Should().BeTrue();
+        response.Data.Should().NotBeNull()
+            .And.BeEquivalentTo(expectedResult);
+        finalOrder.Should().NotBeNull()
+            .And.BeEquivalentTo(expectedResult);
+    }
+    
+    [Fact]
+    public void AddItemsToOrder_WithEmptyName_ShouldReturn_ShouldReturnANegativeResponse()
+    {
+        // Arrange
+        var orderToAddItemsIn = new Order {Id = "test"};
+        _orderManager.AddOrder(orderToAddItemsIn);
+        var itemsToAdd = new [] {new OrderItem {Name = string.Empty}};
+        var response = new Response<Order>();
+        
+        // Act
+        var action = () => response = _orderManager.AddItemsToOrder(orderToAddItemsIn.Id, itemsToAdd);
+        var finalOrder = _orderManager.GetOrder(orderToAddItemsIn.Id).Data;
+
+        // Assert
+        action.Should().NotThrow();
+        response.Successful.Should().BeFalse();
+        response.Data.Should().BeNull();
+        finalOrder.Should().NotBeNull();
+        finalOrder?.Items.Should().BeEmpty();
+    }
+    
+    [Fact]
+    public void AddItemsToOrder_WithNegativeAmount_ShouldReturnANegativeResponse()
+    {
+        // Arrange
+        var orderToAddItemsIn = new Order {Id = "test"};
+        _orderManager.AddOrder(orderToAddItemsIn);
+        var itemsToAdd = new [] {new OrderItem {Name = "test", Amount = -1, Id = 1}};
+        var response = new Response<Order>();
+
+        // Act
+        var action = () => response = _orderManager.AddItemsToOrder(orderToAddItemsIn.Id, itemsToAdd);
+        var finalOrder = _orderManager.GetOrder(orderToAddItemsIn.Id).Data;
+        
+        // Assert
+        action.Should().NotThrow();
+        response.Successful.Should().BeFalse();
+        response.Data.Should().BeNull();
+        finalOrder.Should().NotBeNull();
+        finalOrder?.Items.Should().BeEmpty();
+    }
+    
+    [Fact]
+    public void AddItemsToOrder_WithNegativeId_ShouldReturnANegativeResponse()
+    {
+        // Arrange
+        var orderToAddItemsIn = new Order {Id = "test"};
+        _orderManager.AddOrder(orderToAddItemsIn);
+        var itemsToAdd = new [] {new OrderItem {Name = "test", Id = -1, Amount = 1}};
+        var response = new Response<Order>();
+
+        // Act
+        var action = () => response = _orderManager.AddItemsToOrder(orderToAddItemsIn.Id, itemsToAdd);
+        var finalOrder = _orderManager.GetOrder(orderToAddItemsIn.Id).Data;
+
+        // Assert
+        action.Should().NotThrow();
+        response.Successful.Should().BeFalse();
+        response.Data.Should().BeNull();
+        finalOrder.Should().NotBeNull();
+        finalOrder?.Items.Should().BeEmpty();
+    }
+    
+    [Fact]
+    public void AddItemsToOrder_WhenOrderCannotBeFound_ShouldReturnANegativeResponse()
+    {
+        // Arrange
+        var itemsToAdd = new [] {new OrderItem {Name = "test", Id = 1, Amount = 1}};
+        var response = new Response<Order>();
+        
+        // Act
+        var action = () => response = _orderManager.AddItemsToOrder("dud", itemsToAdd);
+
+        // Assert
+        action.Should().NotThrow();
+        response.Successful.Should().BeFalse();
+        response.Data.Should().BeNull();
+    }
+    
+    [Fact]
+    public void AddItemsToOrder_WhenOrderItemIsAlreadyPresent_ShouldSkipThatItem()
+    {
+        // Arrange
+        var orderToAddItemsIn = new Order {Id = "test", CreationTime = DateTime.Today};
+        _orderManager.AddOrder(orderToAddItemsIn);
+        var startingItems = new[]
+        {
+            new OrderItem {Name = "test1", Id = 1, Amount = 1}, 
+            new OrderItem {Name = "test2", Id = 2, Amount = 1}
+        };
+        var expectedResult = new Order
+        {
+            Id = "test", 
+            CreationTime = DateTime.Today, 
+            Items = (new []
+            {
+                new OrderItem {Name = "test1",Id = 1, Amount = 1}, 
+                new OrderItem {Name = "test2",Id = 2, Amount = 1}, 
+                new OrderItem {Name = "test3", Id = 3, Amount = 1}
+            }).ToList()
+        };
+        _orderManager.AddItemsToOrder(orderToAddItemsIn.Id, startingItems);
+        var itemsToAdd = new []
+        {
+            new OrderItem {Name = "test2", Id = 2, Amount = 1}, 
+            new OrderItem {Name = "test3", Id = 3, Amount = 1}
+        };
+        var response = new Response<Order>();
+
+        // Act
+        var action = () => response = _orderManager.AddItemsToOrder(orderToAddItemsIn.Id, itemsToAdd);
+        var finalOrder = _orderManager.GetOrder(orderToAddItemsIn.Id).Data;
+
+        // Assert
+        action.Should().NotThrow();
+        response.Successful.Should().BeTrue();
+        response.Message.Should().NotBeEmpty();
+        response.Data.Should().NotBeNull()
+            .And.BeEquivalentTo(expectedResult);
+        finalOrder.Should().NotBeNull()
+            .And.BeEquivalentTo(expectedResult);
+    }
+
+    [Fact]
+    public void AddItemsToOrder_WhenItemCanBeAddedSuccessfully_ShouldReturnEditedOrder()
+    {
+        // Arrange
+        var orderToAddItemsIn = new Order {Id = "test", CreationTime = DateTime.Today};
+        var itemsToAdd = new[] {new OrderItem {Name = "testItem", Id = 1, Amount = 1}};
+        _orderManager.AddOrder(orderToAddItemsIn);
+        var expectedResult = new Order
+        {
+            Id = "test", 
+            CreationTime = DateTime.Today, 
+            Items = new[]
+            {
+                new OrderItem {Name = "testItem", Id = 1, Amount = 1}
+            }.ToList()
+        };
+        var response = new Response<Order>();
+        
+        // Act
+        var action = () => response = _orderManager.AddItemsToOrder(orderToAddItemsIn.Id, itemsToAdd);
+        var finalOrder = _orderManager.GetOrder(orderToAddItemsIn.Id).Data;
+
+        // Assert
+        action.Should().NotThrow();
+        response.Successful.Should().BeTrue();
+        response.Message.Should().BeEmpty();
+        response.Data.Should().NotBeNull()
+            .And.BeEquivalentTo(expectedResult);
+        finalOrder.Should().NotBeNull()
+            .And.BeEquivalentTo(expectedResult);
+    }
             
-    // TODO: Tests for GetItemFromOrder
-            // TODO: Order cannot be found
-            // TODO: Item cannot be found
-            // TODO: item can successfully be found
-            
-    // TODO: Tests for DeleteItemFromOrder
-            // TODO: Order cannot be found
-            // TODO: Item cannot be found
-            // TODO: Item can successfully be deleted from the order
+    [Fact]
+    public void GetItemFromOrder_WhenOrderCannotBeFound_ShouldReturnANegativeResponse()
+    {
+        // Arrange
+        const int itemIdToSearchFor = 1;
+        var response = new Response<OrderItem>();
+
+        // Act
+        var action = () => response = _orderManager.GetItemFromOrder("dud", itemIdToSearchFor);
+
+        // Assert
+        action.Should().NotThrow();
+        response.Successful.Should().BeFalse();
+        response.Data.Should().BeNull();
+    }
+    
+    [Fact]
+    public void GetItemFromOrder_WhenItemCannotBeFound_ShouldReturnANegativeResponse()
+    {
+        // Arrange
+        var orderToGetItemsFrom = new Order {Id = "test"};
+        _orderManager.AddOrder(orderToGetItemsFrom);
+        var response = new Response<OrderItem>();
+
+        // Act
+        var action = () => response = _orderManager.GetItemFromOrder(orderToGetItemsFrom.Id, 1);
+
+        // Assert
+        action.Should().NotThrow();
+        response.Successful.Should().BeFalse();
+        response.Data.Should().BeNull();
+    }
+    
+    [Fact]
+    public void GetItemFromOrder_WhenItemCanSuccessfullyBeFound_ShouldReturnItem()
+    {
+        // Arrange
+        var orderToGetItemsFrom = new Order {Id = "test"};
+        _orderManager.AddOrder(orderToGetItemsFrom);
+        var expectedResult = new OrderItem {Name = "testItem", Id = 1, Amount = 1};
+        _orderManager.AddItemsToOrder(orderToGetItemsFrom.Id, new[] {expectedResult});
+        var response = new Response<OrderItem>();
+
+        // Act
+        var action = () => response = 
+            _orderManager.GetItemFromOrder(orderToGetItemsFrom.Id, expectedResult.Id);
+
+        // Assert
+        action.Should().NotThrow();
+        response.Successful.Should().BeTrue();
+        response.Data.Should().NotBeNull()
+            .And.BeEquivalentTo(expectedResult);
+    }
+    
+    [Fact]
+    public void DeleteItemFromOrder_WhenOrderCannotBeFound_ShouldReturnANegativeResponse()
+    {
+        // Arrange
+        const int itemIdToDelete = 1;
+        var response = new Response<Order>();
+
+        // Act
+        var action = () => response = _orderManager.DeleteItemFromOrder("dud", itemIdToDelete);
+
+        // Assert
+        action.Should().NotThrow();
+        response.Successful.Should().BeFalse();
+        response.Data.Should().BeNull();
+    }
+    
+    [Fact]
+    public void DeleteItemFromOrder_WhenItemCannotBeFound_ShouldReturnANegativeResponse()
+    {
+        // Arrange
+        var orderToFindTheItemIn = new Order {Id = "test"};
+        _orderManager.AddOrder(orderToFindTheItemIn);
+        var response = new Response<Order>();
+
+        // Act
+        var action = () => response = _orderManager.DeleteItemFromOrder(orderToFindTheItemIn.Id, 1);
+
+        // Assert
+        action.Should().NotThrow();
+        response.Successful.Should().BeFalse();
+        response.Data.Should().BeNull();
+    }
+    
+    [Fact]
+    public void DeleteItemFromOrder_WhenAbleToSuccessfullyDeleteTheItem_ShouldReturnTheOrderWithoutSaidItem()
+    {
+        // Arrange
+        var orderToRemoveItemsFrom = new Order {Id = "test", CreationTime = DateTime.Today};
+        _orderManager.AddOrder(orderToRemoveItemsFrom);
+        var itemsToAdd = new[]
+        {
+            new OrderItem {Name = "test1", Id = 1, Amount = 1},
+            new OrderItem {Name = "test2", Id = 2, Amount = 1}
+        };
+        _orderManager.AddItemsToOrder(orderToRemoveItemsFrom.Id, itemsToAdd);
+        const int itemIdToRemove = 2;
+        var expectedResult = new Order
+        {
+            Id = "test",
+            CreationTime = DateTime.Today,
+            Items = new[]
+            {
+                itemsToAdd[0]
+            }.ToList()
+        };
+        var response = new Response<Order>();
+
+        // Act
+        var action = () => response = _orderManager.DeleteItemFromOrder(orderToRemoveItemsFrom.Id, itemIdToRemove);
+        var finalOrder = _orderManager.GetOrder(orderToRemoveItemsFrom.Id).Data;
+
+        // Assert
+        action.Should().NotThrow();
+        response.Successful.Should().BeTrue();
+        response.Data.Should().NotBeNull()
+            .And.BeEquivalentTo(expectedResult);
+        finalOrder.Should().NotBeNull()
+            .And.BeEquivalentTo(expectedResult);
+    }
 }

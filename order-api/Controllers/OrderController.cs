@@ -19,14 +19,8 @@ namespace order_api.Controllers
         /// </summary>
         private readonly IOrderManager _orderManager;
 
-        /// <summary>
-        /// The logger.
-        /// </summary>
-        private readonly ILogger<OrderController> _logger;
-
-        public OrderController(ILogger<OrderController> logger, IOrderManager orderManager)
+        public OrderController( IOrderManager orderManager)
         {
-            _logger = logger;
             _orderManager = orderManager;
         }
 
@@ -39,8 +33,10 @@ namespace order_api.Controllers
         ///     200 : If the search was able to be initiated. <br/>
         ///     400 : If the filter did not exist.
         /// </returns>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpGet("active/{filter}")]
-        public ActionResult GetAll(string filter = "all", int page = 1)
+        public IActionResult GetAll(string filter = "all", int page = 1)
         {
             if (filter == "all")
                 return Ok(_orderManager.GetOrderSubset(page: page));
@@ -66,15 +62,22 @@ namespace order_api.Controllers
         ///     200 : If the order was able to be created. <br/>
         ///     400 : If the parameters were invalid.
         /// </returns>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPost("create")]
-        public ActionResult CreateOrder(PlaceOrderSchema orderToAdd)
+        public IActionResult CreateOrder(PlaceOrderSchema orderToAdd)
         {
-            var newOrder = new Order { TotalPrice = orderToAdd.TotalPrice, TableId = orderToAdd.TableId };
+            var newOrder = new Order
+            {
+                TotalPrice = orderToAdd.TotalPrice, 
+                TableId = orderToAdd.TableId, 
+                Note = orderToAdd.Note
+            };
             var response = _orderManager.AddOrder(newOrder);
 
             return response.Successful
-                ? Ok(new Response<Order?> {Data = newOrder})
-                : BadRequest(new Response<Order?> {Successful = false, Message = response.Message});
+                ? Ok(new Response<Order> {Data = newOrder})
+                : BadRequest(new Response<Order> {Successful = false, Message = response.Message});
         }
 
         /// <summary>
@@ -85,8 +88,10 @@ namespace order_api.Controllers
         ///     200 : If the order was found successfully. <br/>
         ///     404 : If the order was not found.
         /// </returns>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet("{orderId}")]
-        public ActionResult GetOrder(string orderId)
+        public IActionResult GetOrder(string orderId)
         {
             var response = _orderManager.GetOrder(orderId);
 
@@ -104,8 +109,10 @@ namespace order_api.Controllers
         ///     200 : If the order could successfully be deleted. <br/>
         ///     400 : If the order could not be deleted.
         /// </returns>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpDelete("{orderId}")]
-        public ActionResult DeleteOrder(string orderId)
+        public IActionResult DeleteOrder(string orderId)
         {
             var success = _orderManager.DeleteOrder(orderId);
 
@@ -124,8 +131,11 @@ namespace order_api.Controllers
         ///     404 : If the order could not be found. <br/>
         ///     400 : If the parameters were invalid.
         /// </returns>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpPost("{orderId}/item")]
-        public ActionResult AddItems(string orderId, OrderItem[] items)
+        public IActionResult AddItems(string orderId, OrderItem[] items)
         {
             var response = _orderManager.AddItemsToOrder(orderId, items);
 
@@ -147,8 +157,10 @@ namespace order_api.Controllers
         ///     200 : If the items was able to be found. <br/>
         ///     404 : If either the item or the order was not found.
         /// </returns>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet("{orderId}/item/{itemId:int}")]
-        public ActionResult GetItem(string orderId, int itemId)
+        public IActionResult GetItem(string orderId, int itemId)
         {
             var response = _orderManager.GetItemFromOrder(orderId, itemId);
 
@@ -167,8 +179,10 @@ namespace order_api.Controllers
         ///     200 : If the item was successfully removed from the order. <br/>
         ///     404 : If the item or the order was not found.
         /// </returns>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpDelete("{orderId}/item/{itemId:int}")]
-        public ActionResult DeleteItem(string orderId, int itemId)
+        public IActionResult DeleteItem(string orderId, int itemId)
         {
             var response = _orderManager.DeleteItemFromOrder(orderId, itemId);
 
@@ -188,8 +202,11 @@ namespace order_api.Controllers
         ///     404 : If the order was not found. <br/>
         ///     400 : If the parameters were invalid.
         /// </returns>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpPut("{orderId}")]
-        public ActionResult UpdateOrder(string orderId, Order newDetails)
+        public IActionResult UpdateOrder(string orderId, Order newDetails)
         {
             var response = _orderManager.UpdateOrderDetails(orderId, newDetails);
 
@@ -214,6 +231,9 @@ namespace order_api.Controllers
         ///     404 : If the order was not found. <br />
         ///     400 : If the order was not able to be finalized.
         /// </returns>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpPost("{orderId}/finalize")]
         public async Task<ActionResult> FinalizeOrder(string orderId)
         {
@@ -239,9 +259,14 @@ namespace order_api.Controllers
                 // Finally, delete the order
                 _orderManager.DeleteOrder(orderId);
             }
-            catch (Exception e)
+            catch
             {
-                return BadRequest(new { message = e.Message });
+                return BadRequest(
+                    new Response
+                    {
+                        Message = "Could not finalize order successfully.",
+                        Successful = false
+                    });
             }
 
             return Ok(new { success = true });
