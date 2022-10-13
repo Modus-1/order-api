@@ -37,7 +37,8 @@
                                 }
                             ],
                             "tableId": 2,
-                            "status": 1
+                            "status": 1,
+                            "note": "Test"
                         },
                         {
                             "id": "f7b9ba83-e7eb-4647-9ff4-ee2ab5dcff35",
@@ -50,7 +51,8 @@
                                 }
                             ],
                             "tableId": 11,
-                            "status": 0
+                            "status": 0,
+                            "note": "Test"
                         }
                     ],
                     "successful": true,
@@ -90,7 +92,8 @@
                         "totalPrice": 0,
                         "items": [],
                         "tableId": 0,
-                        "status": 0
+                        "status": 0,
+                        "note": "Test"
                     },
                     "successful": true,
                     "message": ""
@@ -123,7 +126,8 @@
                         "totalPrice": 0,
                         "items": [],
                         "tableId": 0,
-                        "status": 0
+                        "status": 0,
+                        "note": "Test"
                     },
                     "successful": true,
                     "message": ""
@@ -165,7 +169,8 @@
                         "totalPrice": 0,
                         "items": [],
                         "tableId": 0,
-                        "status": 0
+                        "status": 0,
+                        "note": "Test"
                     },
                     "successful": true,
                     "message": ""
@@ -260,7 +265,8 @@
                         }
                     ],
                     "tableId": 0,
-                    "status": 0
+                    "status": 0,
+                    "note": "Test"
                 }
             }
         }
@@ -319,7 +325,8 @@
                         "totalPrice": 0,
                         "items": [],
                         "tableId": 0,
-                        "status": 0
+                        "status": 0,
+                        "note": "Test"
                     },
                     "successful": true,
                     "message": ""

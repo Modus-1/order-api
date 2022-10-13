@@ -67,11 +67,16 @@ namespace order_api.Controllers
         [HttpPost("create")]
         public IActionResult CreateOrder(PlaceOrderSchema orderToAdd)
         {
+            var truncatedNote = orderToAdd.Note;
+
+            if (truncatedNote.Length > 1024)
+                truncatedNote = truncatedNote[..1024];
+
             var newOrder = new Order
             {
                 TotalPrice = orderToAdd.TotalPrice, 
                 TableId = orderToAdd.TableId, 
-                Note = orderToAdd.Note
+                Note = truncatedNote
             };
             var response = _orderManager.AddOrder(newOrder);
 

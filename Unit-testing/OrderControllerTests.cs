@@ -121,6 +121,39 @@ public class OrderControllerTests
     }
 
     [Fact]
+    public void CreateOrder_WithLongNote_ShouldCutOffNote()
+    {
+        // Arrange
+        var note = "";
+        for (var i = 0; i < 2048; i++)
+            note += "x";
+
+        var orderToAdd = new PlaceOrderSchema { Note = note };
+        _mockOrderManager
+            .Setup(manager => manager.AddOrder(It.IsAny<Order>()))
+            .Returns(new Response
+            {
+                Message = "Mock Success",
+                Successful = true
+            });
+
+        // Act
+        var result = _orderController.CreateOrder(orderToAdd);
+        var okResult = result as OkObjectResult;
+
+        // Assert
+        using (new AssertionScope())
+        {
+            okResult.Should().NotBeNull();
+            okResult?.StatusCode.Should().Be(StatusCodes.Status200OK);
+            okResult?.Value.Should().BeOfType<Response<Order>>();
+            var value = okResult?.Value as Response<Order>;
+            value.Should().NotBeNull();
+            value?.Data?.Note.Should().HaveLength(1024);
+        }
+    }
+
+    [Fact]
     public void CreateOrder_WithCorrectOrderParameters_ShouldReturnOK()
     {
         // Arrange

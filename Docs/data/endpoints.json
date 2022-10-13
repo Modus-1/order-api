@@ -552,6 +552,10 @@
           },
           "status": {
             "$ref": "#/components/schemas/OrderStatus"
+          },
+          "note": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -594,6 +598,10 @@
           "tableId": {
             "type": "integer",
             "format": "int32"
+          },
+          "note": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
