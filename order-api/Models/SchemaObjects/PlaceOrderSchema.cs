@@ -14,5 +14,10 @@
         /// The ID of the table.
         /// </summary>
         public int TableId { get; set; } = 0;
+
+        /// <summary>
+        /// Any special notes the customer has added to their order.
+        /// </summary>
+        public string Note { get; init; } = string.Empty;
     }
 }

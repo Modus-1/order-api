@@ -67,7 +67,12 @@ namespace order_api.Controllers
         [HttpPost("create")]
         public IActionResult CreateOrder(PlaceOrderSchema orderToAdd)
         {
-            var newOrder = new Order { TotalPrice = orderToAdd.TotalPrice, TableId = orderToAdd.TableId };
+            var newOrder = new Order
+            {
+                TotalPrice = orderToAdd.TotalPrice, 
+                TableId = orderToAdd.TableId, 
+                Note = orderToAdd.Note
+            };
             var response = _orderManager.AddOrder(newOrder);
 
             return response.Successful
