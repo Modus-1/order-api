@@ -4,7 +4,7 @@
 ![Modus Logo](Docs/Modus.png)
 # Modus Ordering API Service
 
-This microservice is responsible for handling orders for the Modus Assumption� solution.
+This microservice is responsible for handling orders for the Modus Assumption™ solution.
 
 ## Runtime requirements
  - Docker installation (preferably on a Linux environment)
