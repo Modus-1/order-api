@@ -36,3 +36,6 @@ TestResults/
 
 # IntelliJ
 .idea/
+
+# Obsidian
+.obsidian/
