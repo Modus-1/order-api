@@ -242,11 +242,16 @@
                         const rspCodeSample = document.createElement('td');
 
                         // Check for response body
-                        const rspBody = getResponseBody(200, methodName, pathName);
+                        const rspBody = getResponseBody(parseInt(code), methodName, pathName);
 
                         if(rspBody != null) {
+                            const rspBodyMeta = getRouteMeta(methodName, pathName).responseBodies[code];
+
+                            if(rspBodyMeta == null)
+                                continue;
+
                             const descEl = document.createElement('i');
-                            descEl.textContent = getRouteMeta(methodName, pathName).responseBodies[code].description;
+                            descEl.textContent = (rspBodyMeta.description == null) ? "(no description)" : rspBodyMeta.description;
                             rspCodeSample.appendChild(descEl);
 
                             // Create code block

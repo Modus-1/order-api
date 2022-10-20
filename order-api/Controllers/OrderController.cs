@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using MongoDB.Driver;
+﻿using System.Net;
+using Microsoft.AspNetCore.Mvc;
 using order_api.Config;
 using order_api.Models;
 using order_api.Models.SchemaObjects;
-using System;
+using order_api.Managers;
 
 namespace order_api.Controllers
 {
@@ -17,21 +17,11 @@ namespace order_api.Controllers
         /// <summary>
         /// The management object to handle orders.
         /// </summary>
-        public static OrderManager OrderMgr { get; set; } = new OrderManager();
+        private readonly IOrderManager _orderManager;
 
-        /// <summary>
-        /// Max items per page.
-        /// </summary>
-        public const int PAGINATION_MAX_ITEMS = 10;
-
-        /// <summary>
-        /// The logger.
-        /// </summary>
-        private readonly ILogger<OrderController> _logger;
-
-        public OrderController(ILogger<OrderController> logger)
+        public OrderController( IOrderManager orderManager)
         {
-            _logger = logger;
+            _orderManager = orderManager;
         }
 
         /// <summary>
@@ -39,302 +29,199 @@ namespace order_api.Controllers
         /// </summary>
         /// <param name="filter">Filter to use.</param>
         /// <param name="page">The page to use.</param>
-        /// <returns></returns>
+        /// <returns>
+        ///     200 : If the search was able to be initiated. <br/>
+        ///     400 : If the filter did not exist.
+        /// </returns>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpGet("active/{filter}")]
-        public ActionResult GetAll(string filter = "all", int page = 1)
+        public IActionResult GetAll(string filter = "all", int page = 1)
         {
-            List<Order> orders;
+            if (filter == "all")
+                return Ok(_orderManager.GetOrderSubset(page: page));
 
-            switch(filter)
-            {
-                case "all":
-                    orders = OrderMgr.Orders;
-                    break;
-                case "placed":
-                    orders = OrderMgr.Orders.FindAll((x) => x.Status == OrderStatus.PLACED);
-                    break;
-                case "processing":
-                    orders = OrderMgr.Orders.FindAll((x) => x.Status == OrderStatus.PROCESSING);
-                    break;
-                case "ready":
-                    orders = OrderMgr.Orders.FindAll((x) => x.Status == OrderStatus.READY);
-                    break;
-                default:
-                    return BadRequest();
-            }
+            var correctFilter = Enum.TryParse(filter.ToUpper(), out OrderStatus status);
+            if (!correctFilter)
+                return BadRequest(new Response<List<Order>>
+                {
+                    Successful = false,
+                    Message = "400: No such filter exists."
+                });
 
-            int startIndex = (page - 1) * PAGINATION_MAX_ITEMS;
-            return Ok(orders.Take(new Range(startIndex, startIndex + PAGINATION_MAX_ITEMS)));
+            return Ok(
+                _orderManager.GetOrderSubset(status, page)
+            );
         }
 
         /// <summary>
         /// Route to create order.
         /// </summary>
-        /// <param name="o">The order to create.</param>
-        /// <returns></returns>
+        /// <param name="orderToAdd">The order to create.</param>
+        /// <returns>
+        ///     200 : If the order was able to be created. <br/>
+        ///     400 : If the parameters were invalid.
+        /// </returns>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPost("create")]
-        public ActionResult CreateOrder(PlaceOrderSchema o)
+        public IActionResult CreateOrder(PlaceOrderSchema orderToAdd)
         {
-            try
+            var truncatedNote = orderToAdd.Note;
+
+            if (truncatedNote.Length > 1024)
+                truncatedNote = truncatedNote[..1024];
+
+            var newOrder = new Order
             {
-                var orderToAdd = new Order { TotalPrice = o.TotalPrice, TableId = o.TableId };
-                OrderMgr.AddOrder(orderToAdd);
-                return Ok(orderToAdd);
-            }
-            catch (Exception e)
-            {
-                return BadRequest(new
-                {
-                    message = e.Message
-                });
-            }
+                TotalPrice = orderToAdd.TotalPrice, 
+                TableId = orderToAdd.TableId, 
+                Note = truncatedNote
+            };
+            var response = _orderManager.AddOrder(newOrder);
+
+            return response.Successful
+                ? Ok(new Response<Order> {Data = newOrder})
+                : BadRequest(new Response<Order> {Successful = false, Message = response.Message});
         }
 
         /// <summary>
-        /// Gets the order state.
+        /// Gets the order.
         /// </summary>
-        /// <param name="guid">Order ID.</param>
-        /// <returns></returns>
-        [HttpGet("{guid}")]
-        public ActionResult GetOrder(string guid)
+        /// <param name="orderId">The GUID of the order to be found.</param>
+        /// <returns>
+        ///     200 : If the order was found successfully. <br/>
+        ///     404 : If the order was not found.
+        /// </returns>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [HttpGet("{orderId}")]
+        public IActionResult GetOrder(string orderId)
         {
-            Order? o = OrderMgr.Get(guid);
+            var response = _orderManager.GetOrder(orderId);
 
-            if (o == null)
-                return BadRequest(new { message = "Order not found." });
+            if (response.Successful && response.Data is not null)
+                return Ok(response);
 
-            return Ok(o);
+            return NotFound(response);
         }
 
         /// <summary>
         /// Deletes the specified order.
         /// </summary>
-        /// <param name="guid">The GUID of the order to delete.</param>
-        /// <returns></returns>
-        [HttpDelete("{guid}")]
-        public ActionResult DeleteOrder(string guid)
+        /// <param name="orderId">The GUID of the order to delete.</param>
+        /// <returns>
+        ///     200 : If the order could successfully be deleted. <br/>
+        ///     400 : If the order could not be deleted.
+        /// </returns>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [HttpDelete("{orderId}")]
+        public IActionResult DeleteOrder(string orderId)
         {
-            try
-            {
-                Order? order = OrderMgr.Get(guid);
+            var success = _orderManager.DeleteOrder(orderId);
 
-                if (order == null)
-                    return BadRequest(new { message = "Order not found." });
-
-                OrderMgr.DeleteOrder(guid);
-            }
-            catch(Exception e)
-            {
-                return BadRequest(new { message = e.Message });
-            }
-
-            return Ok(new { success = true });
+            return success
+                ? Ok(new Response())
+                : BadRequest(new Response {Successful = false, Message = "400: Could not delete order."});
         }
 
         /// <summary>
         /// Adds an item to the specified order.
         /// </summary>
-        /// <param name="guid">Order ID.</param>
-        /// <param name="items">Items to add.</param>
-        /// <returns></returns>
-        [HttpPost("{guid}/item")]
-        public ActionResult AddItems(string guid, OrderItem[] items)
+        /// <param name="orderId">The order's GUID to add the item to.</param>
+        /// <param name="items">The items to add to the order.</param>
+        /// <returns>
+        ///     200 : If the item was able to be added to the order. <br/>
+        ///     404 : If the order could not be found. <br/>
+        ///     400 : If the parameters were invalid.
+        /// </returns>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [HttpPost("{orderId}/item")]
+        public IActionResult AddItems(string orderId, OrderItem[] items)
         {
-            Order? o = OrderMgr.Get(guid);
+            var response = _orderManager.AddItemsToOrder(orderId, items);
 
-            if (o == null)
-                return BadRequest(new { message = "Order not found." });
-
-            try
-            {
-                foreach (OrderItem itm in items)
-                    o.AddItem(itm);
-            }
-            catch(Exception e)
-            {
-                return BadRequest(new { message = e.Message });
-            }
-
-            return Ok(o);
+            if (response.Successful && response.Data is not null)
+                return Ok(response);
+            
+            if (response.Message.StartsWith("404"))
+                return NotFound(response);
+            
+            return BadRequest(response);
         }
 
         /// <summary>
         /// Gets the specified order item.
         /// </summary>
-        /// <param name="guid">The GUID of the order.</param>
-        /// <param name="id">The ID of the item.</param>
-        /// <returns></returns>
-        [HttpGet("{guid}/item/{id}")]
-        public ActionResult GetItem(string guid, int id)
+        /// <param name="orderId">The order's GUID of which to get the item from.</param>
+        /// <param name="itemId">The id of the item to get.</param>
+        /// <returns>
+        ///     200 : If the items was able to be found. <br/>
+        ///     404 : If either the item or the order was not found.
+        /// </returns>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [HttpGet("{orderId}/item/{itemId:int}")]
+        public IActionResult GetItem(string orderId, int itemId)
         {
-            Order? order = OrderMgr.Get(guid);
+            var response = _orderManager.GetItemFromOrder(orderId, itemId);
 
-            if (order == null)
-                return BadRequest(new { message = "Order not found." });
+            if (response.Successful && response.Data is not null)
+                return Ok(response);
 
-            OrderItem? item = order.GetItem(id);
-
-            if (item == null)
-                return BadRequest(new { message = "Item not found." });
-
-            return Ok(item);
+            return NotFound(response);
         }
 
         /// <summary>
         /// Deletes the specified order item.
         /// </summary>
-        /// <param name="guid">The GUID of the order.</param>
-        /// <param name="id">The ID of the item.</param>
-        /// <returns></returns>
-        [HttpDelete("{guid}/item/{id}")]
-        public ActionResult DeleteItem(string guid, int id)
+        /// <param name="orderId">The GUID of the order of which to delete the item from</param>
+        /// <param name="itemId">The ID of the item to delete</param>
+        /// <returns>
+        ///     200 : If the item was successfully removed from the order. <br/>
+        ///     404 : If the item or the order was not found.
+        /// </returns>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [HttpDelete("{orderId}/item/{itemId:int}")]
+        public IActionResult DeleteItem(string orderId, int itemId)
         {
-            Order? order = OrderMgr.Get(guid);
+            var response = _orderManager.DeleteItemFromOrder(orderId, itemId);
 
-            if (order == null)
-                return BadRequest(new { message = "Order not found." });
+            if (response.Successful && response.Data is not null)
+                return Ok(response);
 
-            OrderItem? item = order.GetItem(id);
-
-            if (item == null)
-                return BadRequest(new { message = "Item not found." });
-
-            order.RemoveItem(id);
-
-            return Ok(order);
+            return NotFound(response);
         }
 
         /// <summary>
-        /// Route to get the status of the specified order.
+        /// Updates an order's basic details like table number, total price and order status.
         /// </summary>
-        [HttpGet("{guid}/status")]
-        public ActionResult GetStatus(string guid)
+        /// <param name="orderId">The GUID of the order to be updated.</param>
+        /// <param name="newDetails">The new order details. Include the unchanged details as well.</param>
+        /// <returns>
+        ///     200 : If the order was successfully updated. <br/>
+        ///     404 : If the order was not found. <br/>
+        ///     400 : If the parameters were invalid.
+        /// </returns>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [HttpPut("{orderId}")]
+        public IActionResult UpdateOrder(string orderId, Order newDetails)
         {
-            Order? order = OrderMgr.Get(guid);
+            var response = _orderManager.UpdateOrderDetails(orderId, newDetails);
 
-            if (order == null)
-                return BadRequest(new { message = "Order not found." });
+            if (response.Successful && response.Data is not null)
+                return Ok(response);
 
-            return Ok(new
-            {
-                status = (int)order.Status
-            });
-        }
-
-        /// <summary>
-        /// Sets the order status.
-        /// </summary>
-        /// <param name="guid">The order to set the status for.</param>
-        /// <param name="status">The status to set.</param>
-        /// <returns></returns>
-        [HttpPut("{guid}/status")]
-        public ActionResult SetStatus(string guid, int status)
-        {
-            Order? order = OrderMgr.Get(guid);
-
-            if (order == null)
-                return BadRequest(new { message = "Order not found." });
-
-            try
-            {
-                var orderStatus = (OrderStatus)status;
-
-                // Validate status
-                if (!Enum.IsDefined(typeof(OrderStatus), orderStatus))
-                    throw new Exception("Status is not valid.");
-
-                order.Status = orderStatus;
-            }
-            catch (Exception e)
-            {
-                return BadRequest(new { message = e.Message });
-            }
-
-            return Ok(order);
-        }
-
-        /// <summary>
-        /// Sets the order price.
-        /// </summary>
-        /// <param name="price"></param>
-        /// <returns></returns>
-        [HttpPut("{guid}/price")]
-        public ActionResult SetPrice(string guid, decimal price)
-        {
-            Order? order = OrderMgr.Get(guid);
-
-            if (order == null)
-                return BadRequest(new { message = "Order not found." });
-
-            try
-            {
-                order.SetPrice(price);
-            }
-            catch (Exception e)
-            {
-                return BadRequest(new { message = e.Message });
-            }
-
-            return Ok(order);
-        }
-
-        /// <summary>
-        /// Route to get the table number of the specified order.
-        /// </summary>
-        [HttpGet("{guid}/tableno")]
-        public ActionResult GetTableId(string guid)
-        {
-            Order? order = OrderMgr.Get(guid);
-
-            if (order == null)
-                return BadRequest(new { message = "Order not found." });
-
-            return Ok(new
-            {
-                tableId = order.TableId
-            });
-        }
-
-        /// <summary>
-        /// Route to get the price of the specified order.
-        /// </summary>
-        [HttpGet("{guid}/price")]
-        public ActionResult GetPrice(string guid)
-        {
-            Order? order = OrderMgr.Get(guid);
-
-            if (order == null)
-                return BadRequest(new { message = "Order not found." });
-
-            return Ok(new
-            {
-                totalPrice = order.TotalPrice
-            });
-        }
-
-        /// <summary>
-        /// Sets the table number.
-        /// </summary>
-        /// <param name="tableNo">The table number</param>
-        /// <returns></returns>
-        [HttpPut("{guid}/tableno")]
-        public ActionResult SetTableNo(string guid, int tableNo)
-        {
-            Order? order = OrderMgr.Get(guid);
-
-            if (order == null)
-                return BadRequest(new { message = "Order not found." });
-
-            try
-            {
-                order.SetTable(tableNo);
-            }
-            catch (Exception e)
-            {
-                return BadRequest(new { message = e.Message });
-            }
-
-            return Ok(order);
+            if (response.Message.StartsWith("404"))
+                return NotFound(response);
+            
+            return BadRequest(response);
         }
 
         /// <summary>
@@ -343,17 +230,26 @@ namespace order_api.Controllers
         ///   - It is removed from the memory list
         ///   - The order is dumped to the database for record keeping.
         /// </summary>
-        /// <param name="guid"></param>
-        /// <returns></returns>
-        [HttpPost("{guid}/finalize")]
-        public async Task<ActionResult> FinalizeOrder(string guid)
+        /// <param name="orderId"></param>
+        /// <returns>
+        ///     200 : If the order was successfully finalized. <br />
+        ///     404 : If the order was not found. <br />
+        ///     400 : If the order was not able to be finalized.
+        /// </returns>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [HttpPost("{orderId}/finalize")]
+        public async Task<ActionResult> FinalizeOrder(string orderId)
         {
             try
             {
-                Order? order = OrderMgr.Get(guid);
+                var response = _orderManager.GetOrder(orderId);
 
-                if (order == null)
-                    return BadRequest(new { message = "Order not found." });
+                if (!response.Successful || response.Data is null)
+                    return NotFound(response);
+
+                var order = response.Data;
 
                 // Step 1. Set order status to DONE
                 // It is important clients ignore orders which are "DONE", because it implies there is nothing further to be done.
@@ -362,15 +258,20 @@ namespace order_api.Controllers
                 // Step 2. Store a copy of this order in the database
                 // If no database URI is specified, do not store anything
 
-                if(!string.IsNullOrEmpty(DatabaseConfiguration.DATABASE_URI))
-                    await OrderMgr.FinishedOrderCol.InsertOneAsync(order);
+                if (!string.IsNullOrEmpty(DatabaseConfiguration.DATABASE_URI))
+                    await _orderManager.SaveOrderToDatabase(order);
 
                 // Finally, delete the order
-                OrderMgr.DeleteOrder(guid);
+                _orderManager.DeleteOrder(orderId);
             }
-            catch (Exception e)
+            catch
             {
-                return BadRequest(new { message = e.Message });
+                return BadRequest(
+                    new Response
+                    {
+                        Message = "Could not finalize order successfully.",
+                        Successful = false
+                    });
             }
 
             return Ok(new { success = true });

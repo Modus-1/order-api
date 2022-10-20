@@ -28,8 +28,14 @@ msbuild.log
 msbuild.err
 msbuild.wrn
 
+# Test results
+TestResults/
+
 # Visual Studio
 .vs/
 
 # IntelliJ
 .idea/
+
+# Obsidian
+.obsidian/

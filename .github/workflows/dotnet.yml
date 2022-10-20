@@ -49,10 +49,10 @@ jobs:
         dotnet tool install --global dotnet-sonarscanner
         dotnet sonarscanner begin /o:modus-1 /k:Modus-1_order-api /d:sonar.login=${{ secrets.SONAR_TOKEN }} /s:$GITHUB_WORKSPACE/order-api/SonarQube.Analysis.xml
     - name: Build
-      run: dotnet build --configuration Release --no-restore
+      run: dotnet build --no-restore
 
     - name: Test
-      run: dotnet test --no-restore --verbosity normal
+      run: dotnet test --logger:trx --results-directory ./TestResults --settings coverlet.runsettings --verbosity normal --no-restore
     
     - name: SonarCloud End
       run: dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
