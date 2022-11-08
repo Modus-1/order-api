@@ -3,6 +3,19 @@ using order_api.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var AllowSpecificOrigins = "_myAllowSpecificOrigins";
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: AllowSpecificOrigins,
+                      builder =>
+                      {
+                          builder.WithOrigins("http://localhost:3000")
+                              .AllowAnyHeader()
+                              .AllowAnyMethod();
+                      });
+});
+
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -23,6 +36,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors(AllowSpecificOrigins);
 
 app.UseAuthorization();
 
