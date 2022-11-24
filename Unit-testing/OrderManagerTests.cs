@@ -371,9 +371,10 @@ public class OrderManagerTests
             Id = "Test",
             TableId = 42,
             TotalPrice = 69m,
-            CreationTime = DateTime.Today
+            CreationTime = DateTime.Today,
+            Number = 0
         };
-        _orderManager.AddOrder(new Order {Id = expectedResult.Id, CreationTime = DateTime.Today});
+        _orderManager.AddOrder(new Order {Id = expectedResult.Id, CreationTime = DateTime.Today, Number = 0});
         var response = new Response<Order>();
         
         // Act
@@ -472,29 +473,35 @@ public class OrderManagerTests
     public void AddItemsToOrder_WhenOrderItemIsAlreadyPresent_ShouldSkipThatItem()
     {
         // Arrange
-        var orderToAddItemsIn = new Order {Id = "test", CreationTime = DateTime.Today};
+        var orderToAddItemsIn = new Order {Id = "test", CreationTime = DateTime.Today, Number = 1};
         _orderManager.AddOrder(orderToAddItemsIn);
+
+        string guid1 = Guid.NewGuid().ToString();
+        string guid2 = Guid.NewGuid().ToString();
+        string guid3 = Guid.NewGuid().ToString();
+
         var startingItems = new[]
         {
-            new OrderItem {Name = "test1", Id = new Guid().ToString(), Amount = 1}, 
-            new OrderItem {Name = "test2", Id = new Guid().ToString(), Amount = 1}
+            new OrderItem {Name = "test1", Id = guid1, Amount = 1}, 
+            new OrderItem {Name = "test2", Id = guid2, Amount = 1}
         };
+
         var expectedResult = new Order
         {
             Id = "test", 
             CreationTime = DateTime.Today, 
             Items = (new []
             {
-                new OrderItem {Name = "test1",Id = new Guid().ToString(), Amount = 1}, 
-                new OrderItem {Name = "test2",Id = new Guid().ToString(), Amount = 1}, 
-                new OrderItem {Name = "test3", Id = new Guid().ToString(), Amount = 1}
+                new OrderItem {Name = "test1",Id = guid1, Amount = 1}, 
+                new OrderItem {Name = "test2",Id = guid2, Amount = 1}, 
+                new OrderItem {Name = "test3", Id = guid3, Amount = 1}
             }).ToList()
         };
         _orderManager.AddItemsToOrder(orderToAddItemsIn.Id, startingItems);
         var itemsToAdd = new []
         {
-            new OrderItem {Name = "test2", Id = new Guid().ToString(), Amount = 1}, 
-            new OrderItem {Name = "test3", Id = new Guid().ToString(), Amount = 1}
+            new OrderItem {Name = "test2", Id = guid2, Amount = 1}, 
+            new OrderItem {Name = "test3", Id = guid3, Amount = 1}
         };
         var response = new Response<Order>();
 
@@ -516,8 +523,9 @@ public class OrderManagerTests
     public void AddItemsToOrder_WhenItemCanBeAddedSuccessfully_ShouldReturnEditedOrder()
     {
         // Arrange
-        var orderToAddItemsIn = new Order {Id = "test", CreationTime = DateTime.Today};
-        var itemsToAdd = new[] {new OrderItem {Name = "testItem", Id = new Guid().ToString(), Amount = 1}};
+        var orderToAddItemsIn = new Order {Id = "test", CreationTime = DateTime.Today, Number = 1};
+        var itemGuid = new Guid().ToString();
+        var itemsToAdd = new[] {new OrderItem {Name = "testItem", Id = itemGuid, Amount = 1}};
         _orderManager.AddOrder(orderToAddItemsIn);
         var expectedResult = new Order
         {
@@ -525,7 +533,7 @@ public class OrderManagerTests
             CreationTime = DateTime.Today, 
             Items = new[]
             {
-                new OrderItem {Name = "testItem", Id = new Guid().ToString(), Amount = 1}
+                new OrderItem {Name = "testItem", Id = itemGuid, Amount = 1}
             }.ToList()
         };
         var response = new Response<Order>();
@@ -635,15 +643,17 @@ public class OrderManagerTests
     public void DeleteItemFromOrder_WhenAbleToSuccessfullyDeleteTheItem_ShouldReturnTheOrderWithoutSaidItem()
     {
         // Arrange
-        var orderToRemoveItemsFrom = new Order {Id = "test", CreationTime = DateTime.Today};
+        var orderToRemoveItemsFrom = new Order {Id = "test", CreationTime = DateTime.Today, Number = 42};
+        string guid1 = Guid.NewGuid().ToString();
+        string guid2 = Guid.NewGuid().ToString();
         _orderManager.AddOrder(orderToRemoveItemsFrom);
         var itemsToAdd = new[]
         {
-            new OrderItem {Name = "test1", Id = new Guid().ToString(), Amount = 1},
-            new OrderItem {Name = "test2", Id = new Guid().ToString(), Amount = 1}
+            new OrderItem {Name = "test1", Id = guid1, Amount = 1},
+            new OrderItem {Name = "test2", Id = guid2, Amount = 1}
         };
         _orderManager.AddItemsToOrder(orderToRemoveItemsFrom.Id, itemsToAdd);
-        string itemIdToRemove = new Guid().ToString();
+        string itemIdToRemove = guid2;
         var expectedResult = new Order
         {
             Id = "test",
@@ -651,7 +661,8 @@ public class OrderManagerTests
             Items = new[]
             {
                 itemsToAdd[0]
-            }.ToList()
+            }.ToList(),
+            Number = 42
         };
         var response = new Response<Order>();
 
