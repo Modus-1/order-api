@@ -416,7 +416,7 @@ public class OrderManagerTests
         // Arrange
         var orderToAddItemsIn = new Order {Id = "test"};
         _orderManager.AddOrder(orderToAddItemsIn);
-        var itemsToAdd = new [] {new OrderItem {Name = "test", Amount = -1, Id = 1}};
+        var itemsToAdd = new [] {new OrderItem {Name = "test", Amount = -1, Id = new Guid().ToString()}};
         var response = new Response<Order>();
 
         // Act
@@ -432,12 +432,12 @@ public class OrderManagerTests
     }
     
     [Fact]
-    public void AddItemsToOrder_WithNegativeId_ShouldReturnANegativeResponse()
+    public void AddItemsToOrder_WithEmptyId_ShouldReturnANegativeResponse()
     {
         // Arrange
         var orderToAddItemsIn = new Order {Id = "test"};
         _orderManager.AddOrder(orderToAddItemsIn);
-        var itemsToAdd = new [] {new OrderItem {Name = "test", Id = -1, Amount = 1}};
+        var itemsToAdd = new [] {new OrderItem {Name = "test", Id = "", Amount = 1}};
         var response = new Response<Order>();
 
         // Act
@@ -456,7 +456,7 @@ public class OrderManagerTests
     public void AddItemsToOrder_WhenOrderCannotBeFound_ShouldReturnANegativeResponse()
     {
         // Arrange
-        var itemsToAdd = new [] {new OrderItem {Name = "test", Id = 1, Amount = 1}};
+        var itemsToAdd = new [] {new OrderItem {Name = "test", Id = new Guid().ToString(), Amount = 1}};
         var response = new Response<Order>();
         
         // Act
@@ -476,8 +476,8 @@ public class OrderManagerTests
         _orderManager.AddOrder(orderToAddItemsIn);
         var startingItems = new[]
         {
-            new OrderItem {Name = "test1", Id = 1, Amount = 1}, 
-            new OrderItem {Name = "test2", Id = 2, Amount = 1}
+            new OrderItem {Name = "test1", Id = new Guid().ToString(), Amount = 1}, 
+            new OrderItem {Name = "test2", Id = new Guid().ToString(), Amount = 1}
         };
         var expectedResult = new Order
         {
@@ -485,16 +485,16 @@ public class OrderManagerTests
             CreationTime = DateTime.Today, 
             Items = (new []
             {
-                new OrderItem {Name = "test1",Id = 1, Amount = 1}, 
-                new OrderItem {Name = "test2",Id = 2, Amount = 1}, 
-                new OrderItem {Name = "test3", Id = 3, Amount = 1}
+                new OrderItem {Name = "test1",Id = new Guid().ToString(), Amount = 1}, 
+                new OrderItem {Name = "test2",Id = new Guid().ToString(), Amount = 1}, 
+                new OrderItem {Name = "test3", Id = new Guid().ToString(), Amount = 1}
             }).ToList()
         };
         _orderManager.AddItemsToOrder(orderToAddItemsIn.Id, startingItems);
         var itemsToAdd = new []
         {
-            new OrderItem {Name = "test2", Id = 2, Amount = 1}, 
-            new OrderItem {Name = "test3", Id = 3, Amount = 1}
+            new OrderItem {Name = "test2", Id = new Guid().ToString(), Amount = 1}, 
+            new OrderItem {Name = "test3", Id = new Guid().ToString(), Amount = 1}
         };
         var response = new Response<Order>();
 
@@ -517,7 +517,7 @@ public class OrderManagerTests
     {
         // Arrange
         var orderToAddItemsIn = new Order {Id = "test", CreationTime = DateTime.Today};
-        var itemsToAdd = new[] {new OrderItem {Name = "testItem", Id = 1, Amount = 1}};
+        var itemsToAdd = new[] {new OrderItem {Name = "testItem", Id = new Guid().ToString(), Amount = 1}};
         _orderManager.AddOrder(orderToAddItemsIn);
         var expectedResult = new Order
         {
@@ -525,7 +525,7 @@ public class OrderManagerTests
             CreationTime = DateTime.Today, 
             Items = new[]
             {
-                new OrderItem {Name = "testItem", Id = 1, Amount = 1}
+                new OrderItem {Name = "testItem", Id = new Guid().ToString(), Amount = 1}
             }.ToList()
         };
         var response = new Response<Order>();
@@ -548,7 +548,7 @@ public class OrderManagerTests
     public void GetItemFromOrder_WhenOrderCannotBeFound_ShouldReturnANegativeResponse()
     {
         // Arrange
-        const int itemIdToSearchFor = 1;
+        string itemIdToSearchFor = new Guid().ToString();
         var response = new Response<OrderItem>();
 
         // Act
@@ -569,7 +569,7 @@ public class OrderManagerTests
         var response = new Response<OrderItem>();
 
         // Act
-        var action = () => response = _orderManager.GetItemFromOrder(orderToGetItemsFrom.Id, 1);
+        var action = () => response = _orderManager.GetItemFromOrder(orderToGetItemsFrom.Id, new Guid().ToString());
 
         // Assert
         action.Should().NotThrow();
@@ -583,7 +583,7 @@ public class OrderManagerTests
         // Arrange
         var orderToGetItemsFrom = new Order {Id = "test"};
         _orderManager.AddOrder(orderToGetItemsFrom);
-        var expectedResult = new OrderItem {Name = "testItem", Id = 1, Amount = 1};
+        var expectedResult = new OrderItem {Name = "testItem", Id = new Guid().ToString(), Amount = 1};
         _orderManager.AddItemsToOrder(orderToGetItemsFrom.Id, new[] {expectedResult});
         var response = new Response<OrderItem>();
 
@@ -602,7 +602,7 @@ public class OrderManagerTests
     public void DeleteItemFromOrder_WhenOrderCannotBeFound_ShouldReturnANegativeResponse()
     {
         // Arrange
-        const int itemIdToDelete = 1;
+        string itemIdToDelete = new Guid().ToString();
         var response = new Response<Order>();
 
         // Act
@@ -623,7 +623,7 @@ public class OrderManagerTests
         var response = new Response<Order>();
 
         // Act
-        var action = () => response = _orderManager.DeleteItemFromOrder(orderToFindTheItemIn.Id, 1);
+        var action = () => response = _orderManager.DeleteItemFromOrder(orderToFindTheItemIn.Id, new Guid().ToString());
 
         // Assert
         action.Should().NotThrow();
@@ -639,11 +639,11 @@ public class OrderManagerTests
         _orderManager.AddOrder(orderToRemoveItemsFrom);
         var itemsToAdd = new[]
         {
-            new OrderItem {Name = "test1", Id = 1, Amount = 1},
-            new OrderItem {Name = "test2", Id = 2, Amount = 1}
+            new OrderItem {Name = "test1", Id = new Guid().ToString(), Amount = 1},
+            new OrderItem {Name = "test2", Id = new Guid().ToString(), Amount = 1}
         };
         _orderManager.AddItemsToOrder(orderToRemoveItemsFrom.Id, itemsToAdd);
-        const int itemIdToRemove = 2;
+        string itemIdToRemove = new Guid().ToString();
         var expectedResult = new Order
         {
             Id = "test",

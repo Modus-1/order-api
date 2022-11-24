@@ -6,9 +6,9 @@
     public class OrderItem
     {
         /// <summary>
-        /// The Id of this item.
+        /// The Guid of this item.
         /// </summary>
-        public int Id { get; set; } = 0;
+        public string Id { get; set; } = "";
 
         /// <summary>
         /// The quantity of this item.

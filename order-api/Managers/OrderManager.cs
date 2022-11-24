@@ -183,11 +183,11 @@ namespace order_api.Managers
             if (itemsToAdd.Any(item =>
                         string.IsNullOrWhiteSpace(item.Name) ||
                         item.Amount < 1 ||
-                        item.Id < 0))
+                        item.Id.Trim() == ""))
                 return new Response<Order>
                 {
                     Successful = false,
-                    Message = "400: The request needs an item name, a positive amount and an id greater than or equal to 0."
+                    Message = "400: The request needs an item name, a positive amount and an id that is not empty."
                 };
             
             var indexOfOrderToEdit = Orders.FindIndex(order => order.Id == id);
@@ -225,7 +225,7 @@ namespace order_api.Managers
         /// <param name="orderId">The order to search the item in.</param>
         /// <param name="itemId">The item id to search with.</param>
         /// <returns>The details if the items could be found. If successful, includes the found item.</returns>
-        public Response<OrderItem> GetItemFromOrder(string orderId, int itemId)
+        public Response<OrderItem> GetItemFromOrder(string orderId, string itemId)
         {
             var indexOfOrderToSearch = Orders.FindIndex(order => order.Id == orderId);
             if (indexOfOrderToSearch < 0)
@@ -251,7 +251,7 @@ namespace order_api.Managers
         /// <param name="orderId">The order to delete the item from.</param>
         /// <param name="itemId">The item to delete from the order.</param>
         /// <returns>The details if the item has been removed. If successful, includes the updated order.</returns>
-        public Response<Order> DeleteItemFromOrder(string orderId, int itemId)
+        public Response<Order> DeleteItemFromOrder(string orderId, string itemId)
         {
             var indexOfOrderToSearch = Orders.FindIndex(order => order.Id == orderId);
             if (indexOfOrderToSearch < 0)
