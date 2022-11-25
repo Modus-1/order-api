@@ -13,6 +13,11 @@ namespace order_api.Models
         private static int createdOrders = 0;
 
         /// <summary>
+        /// Whether to freeze the order number generator.
+        /// </summary>
+        public static bool FreezeOrderNumbers { get; set; } = false;
+
+        /// <summary>
         /// The rollover count - the point where the order numbers roll over back to 0.
         /// </summary>
         public const int ORDER_NUM_MAX_ROLLOVER = 1000;
@@ -22,11 +27,14 @@ namespace order_api.Models
         /// </summary>
         public Order()
         {
-            // Rollover number
-            if (createdOrders > ORDER_NUM_MAX_ROLLOVER)
-                createdOrders = 0;
+            if(!FreezeOrderNumbers)
+            {
+                // Rollover number
+                if (createdOrders > ORDER_NUM_MAX_ROLLOVER)
+                    createdOrders = 0;
 
-            Number = createdOrders++;
+                Number = createdOrders++;
+            }
         }
 
         /// <summary>
