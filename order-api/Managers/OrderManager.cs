@@ -162,9 +162,9 @@ namespace order_api.Managers
                     Message = "404: Could not find order."
                 };
 
-                Orders[indexOfOrderToEdit].TableId = newDetails.TableId;
-                Orders[indexOfOrderToEdit].TotalPrice = newDetails.TotalPrice;
-                Orders[indexOfOrderToEdit].Status = newDetails.Status;
+            Orders[indexOfOrderToEdit].TableId = newDetails.TableId;
+            Orders[indexOfOrderToEdit].TotalPrice = newDetails.TotalPrice;
+            Orders[indexOfOrderToEdit].Status = newDetails.Status;
 
             return new Response<Order>
             {
