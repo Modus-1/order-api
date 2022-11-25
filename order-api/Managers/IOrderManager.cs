@@ -12,7 +12,7 @@ public interface IOrderManager
     public Response<List<Order>> GetOrderSubset(OrderStatus? status = null, int page = 1);
     public Response<Order> UpdateOrderDetails(string id, Order newDetails);
     public Response<Order> AddItemsToOrder(string id, OrderItem[] itemsToAdd);
-    public Response<OrderItem> GetItemFromOrder(string orderId, int itemId);
-    public Response<Order> DeleteItemFromOrder(string orderId, int itemId);
+    public Response<OrderItem> GetItemFromOrder(string orderId, string itemId);
+    public Response<Order> DeleteItemFromOrder(string orderId, string itemId);
     public Task SaveOrderToDatabase(Order order);
 }

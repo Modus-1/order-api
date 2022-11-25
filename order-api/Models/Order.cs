@@ -8,11 +8,33 @@ namespace order_api.Models
     public class Order
     {
         /// <summary>
+        /// Global created order count.
+        /// </summary>
+        private static int createdOrders = 0;
+
+        /// <summary>
+        /// Whether to freeze the order number generator.
+        /// </summary>
+        public static bool FreezeOrderNumbers { get; set; } = false;
+
+        /// <summary>
+        /// The rollover count - the point where the order numbers roll over back to 0.
+        /// </summary>
+        public const int ORDER_NUM_MAX_ROLLOVER = 1000;
+
+        /// <summary>
         /// Creates an order.
         /// </summary>
         public Order()
         {
-            
+            if(!FreezeOrderNumbers)
+            {
+                // Rollover number
+                if (createdOrders > ORDER_NUM_MAX_ROLLOVER)
+                    createdOrders = 0;
+
+                Number = createdOrders++;
+            }
         }
 
         /// <summary>
@@ -49,5 +71,10 @@ namespace order_api.Models
         /// Any special notes the customer has added to their order.
         /// </summary>
         public string Note { get; set; } = string.Empty;
+
+        /// <summary>
+        /// The order number.
+        /// </summary>
+        public int Number { get; set; } = 0;
     }
 }

@@ -164,8 +164,8 @@ namespace order_api.Controllers
         /// </returns>
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [HttpGet("{orderId}/item/{itemId:int}")]
-        public IActionResult GetItem(string orderId, int itemId)
+        [HttpGet("{orderId}/item/{itemId}")]
+        public IActionResult GetItem(string orderId, string itemId)
         {
             var response = _orderManager.GetItemFromOrder(orderId, itemId);
 
@@ -186,8 +186,8 @@ namespace order_api.Controllers
         /// </returns>
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [HttpDelete("{orderId}/item/{itemId:int}")]
-        public IActionResult DeleteItem(string orderId, int itemId)
+        [HttpDelete("{orderId}/item/{itemId}")]
+        public IActionResult DeleteItem(string orderId, string itemId)
         {
             var response = _orderManager.DeleteItemFromOrder(orderId, itemId);
 
