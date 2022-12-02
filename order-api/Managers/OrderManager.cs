@@ -140,6 +140,18 @@ namespace order_api.Managers
         }
 
         /// <summary>
+        /// Gets all orders except Done.
+        /// </summary>
+        /// <returns>A list of all order except with orderstatus Done.</returns>
+        public Response<List<Order>> GetAllActiveOrders()
+        {
+            return new Response<List<Order>>
+            {
+                Data = Orders.Where(order => order.Status != OrderStatus.DONE).ToList()
+            };
+        }
+
+        /// <summary>
         /// Updates the basic details of an order, like table number, price and status.
         /// </summary>
         /// <param name="id">The id of the order to update.</param>
