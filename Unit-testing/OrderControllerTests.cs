@@ -17,13 +17,15 @@ namespace Unit_testing;
 public class OrderControllerTests
 {
     private readonly Mock<IOrderManager> _mockOrderManager;
+    private readonly Mock<IOrderWebSocketManager> _mockOrderWebSocketManager;
     private readonly OrderController _orderController;
     private const string TestId = "test";
 
     public OrderControllerTests()
     {
         _mockOrderManager = new Mock<IOrderManager>();
-        _orderController = new OrderController(_mockOrderManager.Object);
+        _mockOrderWebSocketManager = new Mock<IOrderWebSocketManager>();
+        _orderController = new OrderController(_mockOrderManager.Object, _mockOrderWebSocketManager.Object);
     }
 
     [Fact]
