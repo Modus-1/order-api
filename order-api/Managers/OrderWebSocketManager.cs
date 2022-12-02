@@ -11,7 +11,7 @@ using System.Text.Json;
 
 namespace order_api.Managers
 {
-    internal class NewOrderEchoService : WebSocketBehavior
+    internal class WssNewOrderService : WebSocketBehavior
     {
         protected override void OnMessage(MessageEventArgs e)
         {
@@ -19,14 +19,8 @@ namespace order_api.Managers
         }
     }
 
-    internal class UpdateOrderEchoService : WebSocketBehavior
+    internal class WssUpdateOrderService : WebSocketBehavior
     {
-        private readonly IOrderManager _orderManager;
-        public UpdateOrderEchoService(IOrderManager orderManager)
-        {
-            _orderManager = orderManager;
-        }
-
         protected override void OnMessage(MessageEventArgs e)
         {
             Console.WriteLine("Message received: " + e.Data);
@@ -34,8 +28,6 @@ namespace order_api.Managers
             Order updatedOrder = JsonSerializer.Deserialize<Order>(e.Data);
 
             Sessions.Broadcast(e.Data);
-
-            //_orderManager.UpdateOrderDetails(updatedOrder.Id, updatedOrder);
         }
     }
 
@@ -47,21 +39,28 @@ namespace order_api.Managers
         public OrderWebSocketManager(IOrderManager orderManager)
         {
             _wssv = new WebSocketServer(_Port);
-            _wssv.AddWebSocketService<NewOrderEchoService>("/order/new");
-            _wssv.AddWebSocketService("order/update", () => new UpdateOrderEchoService(orderManager));
+            _wssv.AddWebSocketService<WssNewOrderService>("/order/new");
+            _wssv.AddWebSocketService<WssUpdateOrderService>("/order/update");
             _wssv.Start();
             Console.WriteLine("Starting websocket server on port " + _Port);
         }
 
+        JsonSerializerOptions serializeOptions = new JsonSerializerOptions //convert to camelCase for the front-end
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            WriteIndented = true
+        };
+
+
         public void SendNewOrder(Order order)
         {
-            string json = JsonSerializer.Serialize(order);
+            string json = JsonSerializer.Serialize(order, serializeOptions);
             _wssv.WebSocketServices["/order/new"].Sessions.Broadcast(json);
         }
 
         public void UpdateExistingOrder(Order order)
         {
-            string json = JsonSerializer.Serialize(order);
+            string json = JsonSerializer.Serialize(order, serializeOptions);
             _wssv.WebSocketServices["/order/update"].Sessions.Broadcast(json);
         }
         

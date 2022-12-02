@@ -25,8 +25,9 @@ builder.Services.AddSwaggerGen();
 
 
 // Add a single instance of the OrderManager to the API
-builder.Services.AddSingleton<IOrderManager, OrderManager>();
-builder.Services.AddSingleton<IOrderWebSocketManager>(new OrderWebSocketManager());
+IOrderManager orderManager = new OrderManager();
+builder.Services.AddSingleton<IOrderManager>(orderManager);
+builder.Services.AddSingleton<IOrderWebSocketManager>(new OrderWebSocketManager(orderManager));
 
 var app = builder.Build();
 
