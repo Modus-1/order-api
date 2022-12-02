@@ -36,7 +36,7 @@ namespace order_api.Managers
         private readonly int _Port = 6969; //the port of the websocket
         private readonly WebSocketServer _wssv;
 
-        public OrderWebSocketManager(IOrderManager orderManager)
+        public OrderWebSocketManager()
         {
             _wssv = new WebSocketServer(_Port);
             _wssv.AddWebSocketService<WssNewOrderService>("/order/new");
