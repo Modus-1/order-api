@@ -15,7 +15,7 @@ namespace order_api.Managers
     {
         protected override void OnMessage(MessageEventArgs e)
         {
-            Console.WriteLine("Message received: " + e.Data);
+            return;
         }
     }
 
@@ -23,10 +23,6 @@ namespace order_api.Managers
     {
         protected override void OnMessage(MessageEventArgs e)
         {
-            Console.WriteLine("Message received: " + e.Data);
-
-            Order updatedOrder = JsonSerializer.Deserialize<Order>(e.Data);
-
             Sessions.Broadcast(e.Data);
         }
     }
@@ -45,7 +41,7 @@ namespace order_api.Managers
             Console.WriteLine("Starting websocket server on port " + _Port);
         }
 
-        JsonSerializerOptions serializeOptions = new JsonSerializerOptions //convert to camelCase for the front-end
+        private readonly JsonSerializerOptions _serializeOptions = new JsonSerializerOptions //convert to camelCase for the front-end
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             WriteIndented = true
@@ -54,13 +50,13 @@ namespace order_api.Managers
 
         public void SendNewOrder(Order order)
         {
-            string json = JsonSerializer.Serialize(order, serializeOptions);
+            string json = JsonSerializer.Serialize(order, _serializeOptions);
             _wssv.WebSocketServices["/order/new"].Sessions.Broadcast(json);
         }
 
         public void UpdateExistingOrder(Order order)
         {
-            string json = JsonSerializer.Serialize(order, serializeOptions);
+            string json = JsonSerializer.Serialize(order, _serializeOptions);
             _wssv.WebSocketServices["/order/update"].Sessions.Broadcast(json);
         }
         
