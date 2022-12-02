@@ -57,6 +57,15 @@ namespace order_api.Controllers
             );
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [HttpGet("active/")]
+        public IActionResult GetAllActive()
+        {
+            return Ok(
+                _orderManager.GetAllActiveOrders()
+            );
+        }
+
         /// <summary>
         /// Route to create order.
         /// </summary>
