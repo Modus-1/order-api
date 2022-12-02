@@ -23,8 +23,10 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+
 // Add a single instance of the OrderManager to the API
 builder.Services.AddSingleton<IOrderManager, OrderManager>();
+builder.Services.AddSingleton<IOrderWebSocketManager>(new OrderWebSocketManager());
 
 var app = builder.Build();
 
