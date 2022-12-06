@@ -4,6 +4,7 @@ using order_api.Config;
 using order_api.Models;
 using order_api.Models.SchemaObjects;
 using order_api.Managers;
+using System.Net.Sockets;
 
 namespace order_api.Controllers
 {
@@ -18,10 +19,12 @@ namespace order_api.Controllers
         /// The management object to handle orders.
         /// </summary>
         private readonly IOrderManager _orderManager;
+        private readonly IOrderWebSocketManager _orderWebSocketManager;
 
-        public OrderController( IOrderManager orderManager)
+        public OrderController(IOrderManager orderManager, IOrderWebSocketManager orderWebSocketManager)
         {
             _orderManager = orderManager;
+            _orderWebSocketManager = orderWebSocketManager;
         }
 
         /// <summary>
@@ -88,6 +91,12 @@ namespace order_api.Controllers
                 Note = truncatedNote
             };
             var response = _orderManager.AddOrder(newOrder);
+
+            //open websocket
+            if (response.Successful)
+            {
+                _orderWebSocketManager.SendNewOrder(newOrder);
+            }
 
             return response.Successful
                 ? Ok(new Response<Order> {Data = newOrder})
