@@ -28,7 +28,7 @@ namespace order_api.Models
         public Order()
         {
             StatusTimes = new DateTime?[] { CreationTime, null, null, null };
-            if(!FreezeOrderNumbers)
+            if (!FreezeOrderNumbers)
             {
                 // Rollover number
                 if (createdOrders > ORDER_NUM_MAX_ROLLOVER)
@@ -63,6 +63,9 @@ namespace order_api.Models
         /// </summary>
         public DateTime CreationTime { get; init; } = DateTime.Now;
 
+        /// <summary>
+        /// Gets or sets the time when the order has been moved to a specific status.
+        /// </summary>
         public DateTime?[] StatusTimes { get; set; }
 
         /// <summary>

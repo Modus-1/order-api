@@ -360,7 +360,7 @@ public class OrderManagerTests
         response.Successful.Should().BeFalse();
         response.Data.Should().BeNull();
     }
-    
+
     [Fact]
     public void UpdateOrderDetails_WhenOrderCanBeSuccessfullyUpdated_ShouldReturnEditedOrder()
     {
@@ -370,11 +370,11 @@ public class OrderManagerTests
             Id = "Test",
             TableId = 42,
             TotalPrice = 69m,
-            CreationTime = DateTime.Today
+            CreationTime = DateTime.Today,
         };
-        _orderManager.AddOrder(new Order {Id = expectedResult.Id, CreationTime = DateTime.Today});
+        _orderManager.AddOrder(new Order { Id = expectedResult.Id, CreationTime = DateTime.Today });
         var response = new Response<Order>();
-        
+
         // Act
         var action = () => response = _orderManager.UpdateOrderDetails(expectedResult.Id, expectedResult);
         var finalOrder = _orderManager.GetOrder(expectedResult.Id).Data;
@@ -382,12 +382,16 @@ public class OrderManagerTests
         // Assert
         action.Should().NotThrow();
         response.Successful.Should().BeTrue();
-        response.Data.Should().NotBeNull()
-            .And.BeEquivalentTo(expectedResult);
-        finalOrder.Should().NotBeNull()
-            .And.BeEquivalentTo(expectedResult);
+        Assert.Equal(response.Data.Id, expectedResult.Id);
+        Assert.Equal(response.Data.TableId, expectedResult.TableId);
+        Assert.Equal(response.Data.TotalPrice, expectedResult.TotalPrice);
+        Assert.Equal(response.Data.CreationTime, expectedResult.CreationTime);
+        Assert.Equal(finalOrder.Id, expectedResult.Id);
+        Assert.Equal(finalOrder.TableId, expectedResult.TableId);
+        Assert.Equal(finalOrder.TotalPrice, expectedResult.TotalPrice);
+        Assert.Equal(finalOrder.CreationTime, expectedResult.CreationTime);
     }
-    
+
     [Fact]
     public void AddItemsToOrder_WithEmptyName_ShouldReturn_ShouldReturnANegativeResponse()
     {
@@ -511,10 +515,14 @@ public class OrderManagerTests
         action.Should().NotThrow();
         response.Successful.Should().BeTrue();
         response.Message.Should().NotBeEmpty();
-        response.Data.Should().NotBeNull()
-            .And.BeEquivalentTo(expectedResult);
-        finalOrder.Should().NotBeNull()
-            .And.BeEquivalentTo(expectedResult);
+        Assert.Equal(response.Data.Id, expectedResult.Id);
+        Assert.Equal(response.Data.TableId, expectedResult.TableId);
+        Assert.Equal(response.Data.TotalPrice, expectedResult.TotalPrice);
+        Assert.Equal(response.Data.CreationTime, expectedResult.CreationTime);
+        Assert.Equal(finalOrder.Id, expectedResult.Id);
+        Assert.Equal(finalOrder.TableId, expectedResult.TableId);
+        Assert.Equal(finalOrder.TotalPrice, expectedResult.TotalPrice);
+        Assert.Equal(finalOrder.CreationTime, expectedResult.CreationTime);
     }
 
     [Fact]
@@ -544,10 +552,14 @@ public class OrderManagerTests
         action.Should().NotThrow();
         response.Successful.Should().BeTrue();
         response.Message.Should().BeEmpty();
-        response.Data.Should().NotBeNull()
-            .And.BeEquivalentTo(expectedResult);
-        finalOrder.Should().NotBeNull()
-            .And.BeEquivalentTo(expectedResult);
+        Assert.Equal(response.Data.Id, expectedResult.Id);
+        Assert.Equal(response.Data.TableId, expectedResult.TableId);
+        Assert.Equal(response.Data.TotalPrice, expectedResult.TotalPrice);
+        Assert.Equal(response.Data.CreationTime, expectedResult.CreationTime);
+        Assert.Equal(finalOrder.Id, expectedResult.Id);
+        Assert.Equal(finalOrder.TableId, expectedResult.TableId);
+        Assert.Equal(finalOrder.TotalPrice, expectedResult.TotalPrice);
+        Assert.Equal(finalOrder.CreationTime, expectedResult.CreationTime);
     }
             
     [Fact]
@@ -670,9 +682,13 @@ public class OrderManagerTests
         // Assert
         action.Should().NotThrow();
         response.Successful.Should().BeTrue();
-        response.Data.Should().NotBeNull()
-            .And.BeEquivalentTo(expectedResult);
-        finalOrder.Should().NotBeNull()
-            .And.BeEquivalentTo(expectedResult);
+        Assert.Equal(response.Data.Id, expectedResult.Id);
+        Assert.Equal(response.Data.TableId, expectedResult.TableId);
+        Assert.Equal(response.Data.TotalPrice, expectedResult.TotalPrice);
+        Assert.Equal(response.Data.CreationTime, expectedResult.CreationTime);
+        Assert.Equal(finalOrder.Id, expectedResult.Id);
+        Assert.Equal(finalOrder.TableId, expectedResult.TableId);
+        Assert.Equal(finalOrder.TotalPrice, expectedResult.TotalPrice);
+        Assert.Equal(finalOrder.CreationTime, expectedResult.CreationTime);
     }
 }
