@@ -27,6 +27,7 @@ namespace order_api.Models
         /// </summary>
         public Order()
         {
+            StatusTimes = new DateTime?[] { CreationTime, null, null, null };
             if(!FreezeOrderNumbers)
             {
                 // Rollover number
@@ -61,6 +62,8 @@ namespace order_api.Models
         /// Specifies when the order was created.
         /// </summary>
         public DateTime CreationTime { get; init; } = DateTime.Now;
+
+        public DateTime?[] StatusTimes { get; set; }
 
         /// <summary>
         /// Gets or sets the order status.
