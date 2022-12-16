@@ -163,7 +163,10 @@ namespace order_api.Controllers
             var response = _orderManager.AddItemsToOrder(orderId, items);
 
             if (response.Successful && response.Data is not null)
+            {
+                _orderWebSocketManager.UpdateExistingOrder(response.Data);
                 return Ok(response);
+            }
             
             if (response.Message.StartsWith("404"))
                 return NotFound(response);
