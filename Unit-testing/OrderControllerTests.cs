@@ -17,13 +17,15 @@ namespace Unit_testing;
 public class OrderControllerTests
 {
     private readonly Mock<IOrderManager> _mockOrderManager;
+    private readonly Mock<IOrderWebSocketManager> _mockOrderWebSocketManager;
     private readonly OrderController _orderController;
     private const string TestId = "test";
 
     public OrderControllerTests()
     {
         _mockOrderManager = new Mock<IOrderManager>();
-        _orderController = new OrderController(_mockOrderManager.Object);
+        _mockOrderWebSocketManager = new Mock<IOrderWebSocketManager>();
+        _orderController = new OrderController(_mockOrderManager.Object, _mockOrderWebSocketManager.Object);
     }
 
     [Fact]
@@ -356,7 +358,7 @@ public class OrderControllerTests
     {
         // Arrange
         _mockOrderManager
-            .Setup(manager => manager.DeleteItemFromOrder(TestId, It.IsAny<int>()))
+            .Setup(manager => manager.DeleteItemFromOrder(TestId, It.IsAny<string>()))
             .Returns(new Response<Order>
             {
                 Data = null,
@@ -365,7 +367,7 @@ public class OrderControllerTests
             });
         
         // Act
-        var result = _orderController.DeleteItem(TestId, It.IsAny<int>());
+        var result = _orderController.DeleteItem(TestId, It.IsAny<string>());
         var notFoundResult = result as NotFoundObjectResult;
 
         // Assert
@@ -382,7 +384,7 @@ public class OrderControllerTests
     {
         // Arrange 
         _mockOrderManager
-            .Setup(manager => manager.DeleteItemFromOrder(TestId, It.IsAny<int>()))
+            .Setup(manager => manager.DeleteItemFromOrder(TestId, It.IsAny<string>()))
             .Returns(new Response<Order>
             {
                 Data = new Order(),
@@ -391,7 +393,7 @@ public class OrderControllerTests
             });
 
         // Act
-        var result = _orderController.DeleteItem(TestId, It.IsAny<int>());
+        var result = _orderController.DeleteItem(TestId, It.IsAny<string>());
         var okResult = result as OkObjectResult;
 
         // Assert
@@ -486,7 +488,7 @@ public class OrderControllerTests
     {
         // Arrange 
         _mockOrderManager
-            .Setup(manager => manager.GetItemFromOrder(TestId, It.IsAny<int>()))
+            .Setup(manager => manager.GetItemFromOrder(TestId, It.IsAny<string>()))
             .Returns(new Response<OrderItem>()
             {
                 Data = new OrderItem(),
@@ -495,7 +497,7 @@ public class OrderControllerTests
             });
 
         // Act
-        var result = _orderController.GetItem(TestId, It.IsAny<int>());
+        var result = _orderController.GetItem(TestId, It.IsAny<string>());
         var okResult = result as OkObjectResult;
 
         // Assert
@@ -512,7 +514,7 @@ public class OrderControllerTests
     {
         // Arrange 
         _mockOrderManager
-            .Setup(manager => manager.GetItemFromOrder(TestId, It.IsAny<int>()))
+            .Setup(manager => manager.GetItemFromOrder(TestId, It.IsAny<string>()))
             .Returns(new Response<OrderItem>()
             {
                 Data = null,
@@ -521,7 +523,7 @@ public class OrderControllerTests
             });
 
         // Act
-        var result = _orderController.GetItem(TestId, It.IsAny<int>());
+        var result = _orderController.GetItem(TestId, It.IsAny<string>());
         var notFoundResult = result as NotFoundObjectResult;
 
         // Assert

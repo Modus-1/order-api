@@ -26,18 +26,19 @@
                             "totalPrice": 20,
                             "items": [
                                 {
-                                    "id": 10,
+                                    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
                                     "amount": 2,
                                     "name": "Pancakes"
                                 },
                                 {
-                                    "id": 31,
+                                    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
                                     "amount": 4,
                                     "name": "Cola"
                                 }
                             ],
                             "tableId": 2,
                             "status": 1,
+                            "number": 0,
                             "note": "Test"
                         },
                         {
@@ -45,13 +46,14 @@
                             "totalPrice": 8.75,
                             "items": [
                                 {
-                                    "id": 1,
+                                    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
                                     "amount": 2,
                                     "name": "Spaghetti"
                                 }
                             ],
                             "tableId": 11,
                             "status": 0,
+                            "number": 0,
                             "note": "Test"
                         }
                     ],
@@ -93,6 +95,7 @@
                         "items": [],
                         "tableId": 0,
                         "status": 0,
+                        "number": 0,
                         "note": "Test"
                     },
                     "successful": true,
@@ -127,6 +130,7 @@
                         "items": [],
                         "tableId": 0,
                         "status": 0,
+                        "number": 0,
                         "note": "Test"
                     },
                     "successful": true,
@@ -170,6 +174,7 @@
                         "items": [],
                         "tableId": 0,
                         "status": 0,
+                        "number": 0,
                         "note": "Test"
                     },
                     "successful": true,
@@ -215,12 +220,12 @@
             "data": {
                 "data": [
                     {
-                        "id": 132,
+                        "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
                         "amount": 20,
                         "name": "Bread"
                     },
                     {
-                        "id": 221,
+                        "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
                         "amount": 4,
                         "name": "Chicken Nuggets"
                     }
@@ -254,18 +259,19 @@
                     "totalPrice": 0,
                     "items": [
                         {
-                            "id": 132,
+                            "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
                             "amount": 20,
                             "name": "Bread"
                         },
                         {
-                            "id": 221,
+                            "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
                             "amount": 4,
                             "name": "Chicken Nuggets"
                         }
                     ],
                     "tableId": 0,
                     "status": 0,
+                    "number": 0,
                     "note": "Test"
                 }
             }
@@ -291,7 +297,7 @@
                 "description": "An object representing the current state of the item.",
                 "data": {
                     "data": {
-                        "id": 132,
+                        "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
                         "amount": 20,
                         "name": "Bread"
                     },
@@ -326,6 +332,7 @@
                         "items": [],
                         "tableId": 0,
                         "status": 0,
+                        "number": 0,
                         "note": "Test"
                     },
                     "successful": true,

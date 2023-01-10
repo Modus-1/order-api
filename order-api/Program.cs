@@ -10,7 +10,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: AllowSpecificOrigins,
                       builder =>
                       {
-                          builder.WithOrigins("http://localhost:3000")
+                      builder.WithOrigins(new string[]  { "http://localhost:3001", "http://localhost:3000", "http://localhost:12345" } )
                               .AllowAnyHeader()
                               .AllowAnyMethod();
                       });
@@ -23,19 +23,17 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+
 // Add a single instance of the OrderManager to the API
 builder.Services.AddSingleton<IOrderManager, OrderManager>();
+builder.Services.AddSingleton<IOrderWebSocketManager, OrderWebSocketManager>();
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
-app.UseHttpsRedirection();
 
 app.UseCors(AllowSpecificOrigins);
 

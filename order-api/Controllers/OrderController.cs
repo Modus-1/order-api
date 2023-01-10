@@ -4,6 +4,7 @@ using order_api.Config;
 using order_api.Models;
 using order_api.Models.SchemaObjects;
 using order_api.Managers;
+using System.Net.Sockets;
 
 namespace order_api.Controllers
 {
@@ -18,10 +19,12 @@ namespace order_api.Controllers
         /// The management object to handle orders.
         /// </summary>
         private readonly IOrderManager _orderManager;
+        private readonly IOrderWebSocketManager _orderWebSocketManager;
 
-        public OrderController( IOrderManager orderManager)
+        public OrderController(IOrderManager orderManager, IOrderWebSocketManager orderWebSocketManager)
         {
             _orderManager = orderManager;
+            _orderWebSocketManager = orderWebSocketManager;
         }
 
         /// <summary>
@@ -54,6 +57,15 @@ namespace order_api.Controllers
             );
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [HttpGet("active/")]
+        public IActionResult GetAllActive()
+        {
+            return Ok(
+                _orderManager.GetAllActiveOrders()
+            );
+        }
+
         /// <summary>
         /// Route to create order.
         /// </summary>
@@ -79,6 +91,12 @@ namespace order_api.Controllers
                 Note = truncatedNote
             };
             var response = _orderManager.AddOrder(newOrder);
+
+            //open websocket
+            if (response.Successful)
+            {
+                _orderWebSocketManager.SendNewOrder(newOrder);
+            }
 
             return response.Successful
                 ? Ok(new Response<Order> {Data = newOrder})
@@ -145,7 +163,10 @@ namespace order_api.Controllers
             var response = _orderManager.AddItemsToOrder(orderId, items);
 
             if (response.Successful && response.Data is not null)
+            {
+                _orderWebSocketManager.UpdateExistingOrder(response.Data);
                 return Ok(response);
+            }
             
             if (response.Message.StartsWith("404"))
                 return NotFound(response);
@@ -164,8 +185,8 @@ namespace order_api.Controllers
         /// </returns>
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [HttpGet("{orderId}/item/{itemId:int}")]
-        public IActionResult GetItem(string orderId, int itemId)
+        [HttpGet("{orderId}/item/{itemId}")]
+        public IActionResult GetItem(string orderId, string itemId)
         {
             var response = _orderManager.GetItemFromOrder(orderId, itemId);
 
@@ -186,8 +207,8 @@ namespace order_api.Controllers
         /// </returns>
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [HttpDelete("{orderId}/item/{itemId:int}")]
-        public IActionResult DeleteItem(string orderId, int itemId)
+        [HttpDelete("{orderId}/item/{itemId}")]
+        public IActionResult DeleteItem(string orderId, string itemId)
         {
             var response = _orderManager.DeleteItemFromOrder(orderId, itemId);
 
